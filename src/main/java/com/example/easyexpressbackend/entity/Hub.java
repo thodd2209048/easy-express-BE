@@ -17,4 +17,5 @@ public class Hub extends BaseEntity{
     private String name;
     @Column(unique = true)
     private String location;
+
 }
