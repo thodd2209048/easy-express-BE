@@ -38,4 +38,9 @@ public class HubController {
             ){
         return service.updateHub(id, updateHub);
     }
+
+    @DeleteMapping("{id}")
+    public void deleteHub(@PathVariable Long id){
+        service.deleteHub(id);
+    }
 }

@@ -47,14 +47,21 @@ public class HubService {
 
     public HubResponse updateHub(Long id, UpdateHub updateHub) {
         Optional<Hub> optionalHub = repository.findById(id);
-        if(optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: "+ id + "does not exist");
+        if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
 
         Hub currentHub = optionalHub.get();
         Hub newHub = mapper.copy(currentHub);
         mapper.updateHub(updateHub, newHub);
-        if(newHub.equals(currentHub)) throw new DuplicateObjectException("The updated object is the same as the existing one.");
+        if (newHub.equals(currentHub))
+            throw new DuplicateObjectException("The updated object is the same as the existing one.");
 
         repository.save(newHub);
         return mapper.hubToHubResponse(newHub);
+    }
+
+    public void deleteHub(Long id) {
+        boolean exist = repository.existsById(id);
+        if(!exist) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
+        repository.deleteById(id);
     }
 }
