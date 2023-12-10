@@ -1,9 +1,9 @@
-package com.example.easyexpressbackend.mapper.hub;
+package com.example.easyexpressbackend.mapper;
 
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
 import com.example.easyexpressbackend.dto.hub.UpdateHub;
 import com.example.easyexpressbackend.entity.Hub;
-import com.example.easyexpressbackend.response.hub.HubResponse;
+import com.example.easyexpressbackend.response.HubResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

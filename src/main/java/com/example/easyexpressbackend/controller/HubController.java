@@ -2,7 +2,7 @@ package com.example.easyexpressbackend.controller;
 
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
 import com.example.easyexpressbackend.dto.hub.UpdateHub;
-import com.example.easyexpressbackend.response.hub.HubResponse;
+import com.example.easyexpressbackend.response.HubResponse;
 import com.example.easyexpressbackend.service.HubService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
