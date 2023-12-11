@@ -7,9 +7,11 @@ import com.example.easyexpressbackend.response.StaffResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
+//        (unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface StaffMapper {
     StaffMapper INSTANCE = Mappers.getMapper(StaffMapper.class);
 

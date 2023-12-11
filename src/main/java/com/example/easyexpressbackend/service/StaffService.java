@@ -8,7 +8,11 @@ import com.example.easyexpressbackend.repository.HubRepository;
 import com.example.easyexpressbackend.repository.StaffRepository;
 import com.example.easyexpressbackend.response.StaffResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class StaffService {
@@ -23,6 +27,12 @@ public class StaffService {
         this.repository = repository;
         this.hubRepository = hubRepository;
         this.mapper = mapper;
+    }
+
+    public List<StaffResponse> listStaffs(Long hubId) {
+        return repository.listStaffs(hubId).stream()
+                .map(mapper::staffToStaffResponse)
+                .toList();
     }
 
     public StaffResponse addStaff(AddStaffDto addStaffDto) {
