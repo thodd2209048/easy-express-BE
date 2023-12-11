@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/hub")
+@RequestMapping(path = "/api/hubs")
 @CrossOrigin(origins = "http://localhost:3000")
 public class HubController {
     private final HubService service;
@@ -34,7 +34,7 @@ public class HubController {
     @PutMapping("/{id}")
     public HubResponse updateHub(
             @PathVariable Long id,
-            @RequestBody @Valid UpdateHub updateHub
+            @RequestBody UpdateHub updateHub
             ){
         return service.updateHub(id, updateHub);
     }

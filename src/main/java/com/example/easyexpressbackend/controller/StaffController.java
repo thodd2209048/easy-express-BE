@@ -5,10 +5,14 @@ import com.example.easyexpressbackend.response.StaffResponse;
 import com.example.easyexpressbackend.service.StaffService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/staff")
+@RequestMapping("/api/staffs")
 @CrossOrigin(origins = "http://localhost:3000")
 public class StaffController {
     private final StaffService service;
@@ -16,6 +20,12 @@ public class StaffController {
     @Autowired
     public StaffController(StaffService service) {
         this.service = service;
+    }
+
+    @GetMapping({"/",""})
+    public List<StaffResponse> listStaffs(
+            @RequestParam (required = false) Long hubId){
+        return service.listStaffs(hubId);
     }
 
     @PostMapping({"/",""})
