@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
-import com.example.easyexpressbackend.dto.hub.UpdateHub;
+import com.example.easyexpressbackend.dto.hub.UpdateHubDto;
 import com.example.easyexpressbackend.entity.Hub;
 import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
@@ -45,13 +45,13 @@ public class HubService {
         return mapper.hubToHubResponse(newHub);
     }
 
-    public HubResponse updateHub(Long id, UpdateHub updateHub) {
+    public HubResponse updateHub(Long id, UpdateHubDto updateHubDto) {
         Optional<Hub> optionalHub = repository.findById(id);
         if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
 
         Hub currentHub = optionalHub.get();
         Hub newHub = mapper.copy(currentHub);
-        mapper.updateHub(updateHub, newHub);
+        mapper.updateHub(updateHubDto, newHub);
         if (newHub.equals(currentHub))
             throw new DuplicateObjectException("The updated object is the same as the existing one.");
 

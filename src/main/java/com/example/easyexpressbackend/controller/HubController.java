@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.controller;
 
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
-import com.example.easyexpressbackend.dto.hub.UpdateHub;
+import com.example.easyexpressbackend.dto.hub.UpdateHubDto;
 import com.example.easyexpressbackend.response.HubResponse;
 import com.example.easyexpressbackend.service.HubService;
 import jakarta.validation.Valid;
@@ -34,9 +34,9 @@ public class HubController {
     @PutMapping("/{id}")
     public HubResponse updateHub(
             @PathVariable Long id,
-            @RequestBody UpdateHub updateHub
+            @RequestBody UpdateHubDto updateHubDto
             ){
-        return service.updateHub(id, updateHub);
+        return service.updateHub(id, updateHubDto);
     }
 
     @DeleteMapping("{id}")

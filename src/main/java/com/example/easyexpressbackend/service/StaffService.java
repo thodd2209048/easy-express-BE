@@ -1,7 +1,9 @@
 package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.dto.staff.AddStaffDto;
+import com.example.easyexpressbackend.dto.staff.UpdateStaffDto;
 import com.example.easyexpressbackend.entity.Staff;
+import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.StaffMapper;
 import com.example.easyexpressbackend.repository.HubRepository;
@@ -12,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StaffService {
@@ -29,10 +31,9 @@ public class StaffService {
         this.mapper = mapper;
     }
 
-    public List<StaffResponse> listStaffs(Long hubId) {
-        return repository.listStaffs(hubId).stream()
-                .map(mapper::staffToStaffResponse)
-                .toList();
+    public Page<StaffResponse> listStaffs(Pageable pageable, Long hubId) {
+        return repository.listStaffs(pageable, hubId)
+                .map(mapper::staffToStaffResponse);
     }
 
     public StaffResponse addStaff(AddStaffDto addStaffDto) {
@@ -44,5 +45,29 @@ public class StaffService {
         Staff newStaff = mapper.addStaffToStaff(addStaffDto);
         repository.save(newStaff);
         return mapper.staffToStaffResponse(newStaff);
+    }
+
+    public StaffResponse updateStaff(Long id, UpdateStaffDto updateStaffDto) {
+        Optional<Staff> staffOptional = repository.findById(id);
+        if (staffOptional.isEmpty()) throw new ObjectNotFoundException("Staff with id: " + id + "does not exist");
+        Long hubId = updateStaffDto.getHubId();
+        boolean existHub = hubRepository.existsById(hubId);
+        if (!existHub) throw new ObjectNotFoundException(
+                "Staff with id: " + hubId + " does not exist");
+
+        Staff currentStaff = staffOptional.get();
+        Staff newStaff = mapper.copy(currentStaff);
+        mapper.updateStaff(updateStaffDto, newStaff);
+        if (newStaff.equals(currentStaff))
+            throw new DuplicateObjectException("The updated object is the same as the existing one.");
+
+        repository.save(newStaff);
+        return mapper.staffToStaffResponse(newStaff);
+    }
+
+    public void deleteStaff(Long id) {
+        boolean exist = repository.existsById(id);
+        if(!exist) throw new ObjectNotFoundException("Staff with id: " + id + "does not exist");
+        repository.deleteById(id);
     }
 }

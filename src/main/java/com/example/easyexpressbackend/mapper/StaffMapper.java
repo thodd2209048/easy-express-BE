@@ -22,6 +22,8 @@ public interface StaffMapper {
 
     StaffResponse staffToStaffResponse(Staff staff);
 
+    Staff copy(Staff staff);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

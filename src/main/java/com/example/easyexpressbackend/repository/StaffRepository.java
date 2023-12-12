@@ -14,6 +14,6 @@ import java.util.List;
 public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     @Query(" SELECT s FROM Staff s WHERE (:hubId IS NULL OR s.hubId = :hubId) ")
-    List<Staff> listStaffs(@Param("hubId") Long hubId);
+    Page<Staff> listStaffs(Pageable pageable, @Param("hubId") Long hubId);
 
 }

@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.mapper;
 
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
-import com.example.easyexpressbackend.dto.hub.UpdateHub;
+import com.example.easyexpressbackend.dto.hub.UpdateHubDto;
 import com.example.easyexpressbackend.entity.Hub;
 import com.example.easyexpressbackend.response.HubResponse;
 import org.mapstruct.Mapper;
@@ -25,5 +25,5 @@ public interface HubMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void updateHub(UpdateHub updateHub, @MappingTarget Hub hub);
+    void updateHub(UpdateHubDto updateHubDto, @MappingTarget Hub hub);
 }
