@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.response.hub;
+package com.example.easyexpressbackend.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

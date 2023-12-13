@@ -1,6 +1,5 @@
 package com.example.easyexpressbackend.dto.hub;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateHub {
+public class UpdateHubDto {
         private String name;
         private String location;
 }
