@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.dto.parcel;
+package com.example.easyexpressbackend.dto.shipment;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddParcelDto {
+public class AddShipmentDto {
     @NotEmpty
     private String senderName;
     @NotEmpty

@@ -1,16 +1,21 @@
-package com.example.easyexpressbackend.response;
+package com.example.easyexpressbackend.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@Entity
+@EqualsAndHashCode(callSuper=false)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParcelResponse {
-    private Long id;
-    private String parcelNumber;
+@SuperBuilder
+public class Shipment extends BaseEntity{
+    private String number;
     private String senderName;
     private String senderPhone;
     private String senderAddress;
@@ -18,6 +23,7 @@ public class ParcelResponse {
     private String receiverPhone;
     private String receiverAddress;
     private Double value;
+    @Column(columnDefinition = "text")
     private String description;
     private Double weight;
     private Double length;
