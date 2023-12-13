@@ -7,7 +7,6 @@ import com.example.easyexpressbackend.entity.Staff;
 import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.StaffMapper;
-import com.example.easyexpressbackend.repository.HubRepository;
 import com.example.easyexpressbackend.repository.StaffRepository;
 import com.example.easyexpressbackend.response.StaffResponse;
 import org.springframework.beans.factory.annotation.Autowired;
