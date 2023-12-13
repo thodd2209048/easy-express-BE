@@ -20,6 +20,7 @@ public interface StaffMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Staff addStaffToStaff (AddStaffDto addStaffDto);
 
+    @Mapping(target = "hubName", ignore = true)
     StaffResponse staffToStaffResponse(Staff staff);
 
     Staff copy(Staff staff);

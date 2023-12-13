@@ -11,4 +11,5 @@ public class StaffResponse {
     private Long id;
     private String name;
     private Long hubId;
+    private String hubName;
 }

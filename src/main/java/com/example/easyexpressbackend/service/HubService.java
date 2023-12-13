@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -28,6 +30,15 @@ public class HubService {
     }
 
     public Page<HubResponse> listHub(Pageable pageable) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // Định dạng thời gian
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+
+        // In ra thời gian hiện tại
+        System.out.println("Thời gian hiện tại: " + formattedTime);
+        System.out.println("list hub");
         return repository.findAll(pageable).map(mapper::hubToHubResponse);
     }
 
@@ -46,10 +57,7 @@ public class HubService {
     }
 
     public HubResponse updateHub(Long id, UpdateHubDto updateHubDto) {
-        Optional<Hub> optionalHub = repository.findById(id);
-        if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
-
-        Hub currentHub = optionalHub.get();
+        Hub currentHub = this.findById(id);
         Hub newHub = mapper.copy(currentHub);
         mapper.updateHub(updateHubDto, newHub);
         if (newHub.equals(currentHub))
@@ -63,5 +71,15 @@ public class HubService {
         boolean exist = repository.existsById(id);
         if(!exist) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
         repository.deleteById(id);
+    }
+
+    public boolean existsById (Long id){
+        return repository.existsById(id);
+    }
+
+    public Hub findById(Long id){
+        Optional<Hub> optionalHub = repository.findById(id);
+        if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
+        return optionalHub.get();
     }
 }
