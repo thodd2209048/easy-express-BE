@@ -46,4 +46,8 @@ public class ShipmentService {
         repository.save(shipment);
         return mapper.shipmentToShipmentResponse(shipment);
     }
+
+    public boolean exist(String number){
+        return repository.existsByNumber(number);
+    }
 }

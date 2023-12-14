@@ -17,4 +17,6 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
 
     @Query("SELECT s FROM Shipment s ORDER BY s.createdAt DESC")
     Page<Shipment> findAllOrderByCreatedDateDesc(Pageable pageable);
+
+    boolean existsByNumber(String number);
 }
