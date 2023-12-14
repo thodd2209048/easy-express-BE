@@ -16,15 +16,18 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Shipment extends BaseEntity{
     private String number;
+//    FROM
     private String senderName;
     private String senderPhone;
     private String senderAddress;
+//    TO
     private String receiverName;
     private String receiverPhone;
     private String receiverAddress;
-    private Double value;
+//    SHIPMENT DETAILS
     @Column(columnDefinition = "text")
     private String description;
+    private Double value;
     private Double weight;
     private Double length;
     private Double width;

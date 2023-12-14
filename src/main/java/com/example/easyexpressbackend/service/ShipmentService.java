@@ -27,7 +27,7 @@ public class ShipmentService {
     }
 
     public Page<ShipmentResponse> listShipments(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::shipmentToShipmentResponse);
+        return repository.findAllOrderByCreatedDateDesc(pageable).map(mapper::shipmentToShipmentResponse);
     }
 
     public ShipmentResponse getShipment(String number) {

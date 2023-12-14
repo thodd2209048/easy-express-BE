@@ -21,17 +21,17 @@ public class ShipmentController {
     }
 
     @GetMapping({"/",""})
-    public Page<ShipmentResponse> listParcels(Pageable pageable){
+    public Page<ShipmentResponse> listShipments(Pageable pageable){
         return service.listShipments(pageable);
     }
 
     @GetMapping("/{number}")
-    public ShipmentResponse getParcels(@PathVariable String number){
+    public ShipmentResponse getShipments(@PathVariable String number){
         return service.getShipment(number);
     }
 
     @PostMapping({"","/"})
-    public ShipmentResponse addParcel(@RequestBody @Valid AddShipmentDto addShipmentDto){
+    public ShipmentResponse addShipment(@RequestBody @Valid AddShipmentDto addShipmentDto){
         return service.addShipment(addShipmentDto);
     }
 }
