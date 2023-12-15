@@ -26,18 +26,19 @@ public class AddShipmentDto {
     private String receiverAddress;
     @NotNull
     @Min(0)
-    private Double value;
+    private Double valueInDollar;
     private String description;
     @NotNull
     @Positive
-    private Double weight;
+    private Double weightInKg;
     @NotNull
     @Min(0)
-    private Double length;
+    private Double lengthInCm;
     @NotNull
     @Min(0)
-    private Double width;
+    private Double widthInCm;
     @NotNull
     @Min(0)
-    private Double height;
+    private Double heightInCm;
+
 }

@@ -27,9 +27,9 @@ public class Shipment extends BaseEntity{
 //    SHIPMENT DETAILS
     @Column(columnDefinition = "text")
     private String description;
-    private Double value;
-    private Double weight;
-    private Double length;
-    private Double width;
-    private Double height;
+    private Double valueInDollar;
+    private Double weightInKg;
+    private Double lengthInCm;
+    private Double widthInCm;
+    private Double heightInCm;
 }

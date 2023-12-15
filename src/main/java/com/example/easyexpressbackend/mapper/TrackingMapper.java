@@ -16,5 +16,8 @@ public interface TrackingMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Tracking addTrackingToTracking (AddTrackingDto addTrackingDto);
 
+    @Mapping(target = "staffName", ignore = true)
+    @Mapping(target = "hubId", ignore = true)
+    @Mapping(target = "hubName", ignore = true)
     TrackingResponse trackingToTrackingResponse(Tracking tracking);
 }
