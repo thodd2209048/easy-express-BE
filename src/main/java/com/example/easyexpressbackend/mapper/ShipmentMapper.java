@@ -2,7 +2,8 @@ package com.example.easyexpressbackend.mapper;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
 import com.example.easyexpressbackend.entity.Shipment;
-import com.example.easyexpressbackend.response.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -18,6 +19,7 @@ public interface ShipmentMapper {
     Shipment addShipmentToShipment(AddShipmentDto addShipmentDto);
 
     ShipmentResponse shipmentToShipmentResponse(Shipment shipment);
+    ShipmentPublicResponse shipmentToSortShipmentResponse(Shipment shipment);
 
     Shipment copy(Shipment shipment);
 
