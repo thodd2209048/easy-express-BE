@@ -82,4 +82,8 @@ public class HubService {
         if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
         return optionalHub.get();
     }
+
+    public HubResponse findHubResponseById(Long id){
+        return mapper.hubToHubResponse(this.findById(id));
+    }
 }

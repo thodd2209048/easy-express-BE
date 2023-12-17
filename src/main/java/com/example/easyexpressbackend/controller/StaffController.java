@@ -8,10 +8,13 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/staffs")
+@CrossOrigin(origins = "http://localhost:3000")
 public class StaffController {
     private final StaffService service;
 
@@ -21,7 +24,7 @@ public class StaffController {
     }
 
     @GetMapping({"/",""})
-    public Page<StaffResponse> listStaffs(Pageable pageable,
+    public Page<StaffResponse> listStaffs(@PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam (required = false) Long hubId){
         return service.listStaffs(pageable, hubId);
     }

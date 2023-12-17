@@ -82,7 +82,7 @@ public class StaffService {
     public Staff findById(Long id){
         Optional<Staff> optionalStaff = repository.findById(id);
         if(optionalStaff.isEmpty())
-            throw new ObjectNotFoundException("Staff with id: " + id + "does not exist");
+            throw new ObjectNotFoundException("Staff with id: " + id + " does not exist");
         return optionalStaff.get();
     }
 }
