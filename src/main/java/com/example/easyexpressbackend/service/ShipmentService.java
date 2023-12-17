@@ -5,7 +5,8 @@ import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.ShipmentMapper;
 import com.example.easyexpressbackend.repository.ShipmentRepository;
-import com.example.easyexpressbackend.response.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,11 +31,8 @@ public class ShipmentService {
         return repository.findAllOrderByCreatedDateDesc(pageable).map(mapper::shipmentToShipmentResponse);
     }
 
-    public ShipmentResponse getShipment(String number) {
-        Optional<Shipment> optionalShipment = repository.findByNumber(number);
-        if(optionalShipment.isEmpty())throw new ObjectNotFoundException(
-                "Shipment with number: " + number + " does not exist");
-        Shipment shipment = optionalShipment.get();
+    public ShipmentResponse getShipmentResponse(String number) {
+        Shipment shipment = this.getShipment(number);
         return mapper.shipmentToShipmentResponse(shipment);
     }
 
@@ -47,7 +45,18 @@ public class ShipmentService {
         return mapper.shipmentToShipmentResponse(shipment);
     }
 
-    public boolean exist(String number){
+    public boolean exist(String number) {
         return repository.existsByNumber(number);
+    }
+
+    public Shipment getShipment(String number) {
+        Optional<Shipment> optionalShipment = repository.findByNumber(number);
+        if (optionalShipment.isEmpty()) throw new ObjectNotFoundException(
+                "Shipment with number: " + number + " does not exist");
+        return optionalShipment.get();
+    }
+
+    public ShipmentPublicResponse convertShipmentToShipmentShortResponse(Shipment shipment){
+        return mapper.shipmentToSortShipmentResponse(shipment);
     }
 }

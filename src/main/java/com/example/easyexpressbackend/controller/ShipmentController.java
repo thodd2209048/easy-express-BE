@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.controller;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
-import com.example.easyexpressbackend.response.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import com.example.easyexpressbackend.service.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class ShipmentController {
 
     @GetMapping("/{number}")
     public ShipmentResponse getShipments(@PathVariable String number){
-        return service.getShipment(number);
+        return service.getShipmentResponse(number);
     }
 
     @PostMapping({"","/"})

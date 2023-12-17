@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.response.tracking;
+package com.example.easyexpressbackend.modal;
 
 import com.example.easyexpressbackend.constant.Status;
 import com.example.easyexpressbackend.response.HubResponse;
@@ -11,13 +11,10 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrackingShipmentResponse {
+public class TrackingPublic {
     private Long id;
     private ZonedDateTime createdAt;
     private String timeString;
-    private String shipmentNumber;
-    private Long staffId;
-    private String staffName;
     private HubResponse hub;
     private Status status;
 }

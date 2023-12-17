@@ -1,19 +1,21 @@
 package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
+import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.entity.Staff;
 import com.example.easyexpressbackend.entity.Tracking;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.TrackingMapper;
+import com.example.easyexpressbackend.modal.TrackingPublic;
 import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
+import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingResponse;
-import com.example.easyexpressbackend.response.tracking.TrackingShipmentResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -37,12 +39,18 @@ public class TrackingService {
         this.hubService = hubService;
     }
 
-    public List<TrackingShipmentResponse> listTrackingOfShipment(String shipmentNumber) {
+    public TrackingAShipmentResponse trackingAShipment(String shipmentNumber) {
         List<Tracking> trackingList = repository.findAllByShipmentNumberOrderByCreatedAtDesc(shipmentNumber);
-        System.out.println(ZonedDateTime.now());
-        return trackingList.stream()
-                .map(this::convertTrackingToTrackingShipmentResponse)
+        List<TrackingPublic> trackingPublicList = trackingList.stream()
+                .map(this::convertTrackingToTrackingPublic)
                 .toList();
+        Shipment shipment = shipmentService.getShipment(shipmentNumber);
+        ShipmentPublicResponse shipmentPublicResponse = shipmentService.convertShipmentToShipmentShortResponse(shipment);
+
+        TrackingAShipmentResponse trackingAShipmentResponse = new TrackingAShipmentResponse();
+        trackingAShipmentResponse.setShipment(shipmentPublicResponse);
+        trackingAShipmentResponse.setTrackingList(trackingPublicList);
+        return trackingAShipmentResponse;
     }
 
     public TrackingResponse addTracking(AddTrackingDto addTrackingDto) {
@@ -73,19 +81,16 @@ public class TrackingService {
         return trackingResponse;
     }
 
-    private TrackingShipmentResponse convertTrackingToTrackingShipmentResponse(Tracking tracking) {
-        TrackingShipmentResponse trackingResponse = mapper.trackingToTrackingShipmentResponse(tracking);
+    private TrackingPublic convertTrackingToTrackingPublic(Tracking tracking){
+        TrackingPublic trackingPublic = mapper.trackingToTrackingPublic(tracking);
         String timeString = Utils.convertToHumanTime(tracking.getCreatedAt());
         Long staffId = tracking.getStaffId();
-        Staff staff = staffService.findById(staffId);
-        String staffName = staff.getName();
-        Long hubId = staff.getHubId();
+        Long hubId = staffService.findById(staffId).getHubId();
         HubResponse hubResponse = hubService.findHubResponseById(hubId);
 
-        trackingResponse.setTimeString(timeString);
-        trackingResponse.setStaffName(staffName);
-        trackingResponse.setHub(hubResponse);
-        return trackingResponse;
+        trackingPublic.setTimeString(timeString);
+        trackingPublic.setHub(hubResponse);
+        return trackingPublic;
     }
 
 
