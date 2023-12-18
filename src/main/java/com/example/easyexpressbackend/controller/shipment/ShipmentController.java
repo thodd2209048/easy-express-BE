@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.controller;
+package com.example.easyexpressbackend.controller.shipment;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
 import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
