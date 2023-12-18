@@ -1,20 +1,20 @@
-package com.example.easyexpressbackend.controller;
+package com.example.easyexpressbackend.controller.tracking;
 
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
-import com.example.easyexpressbackend.response.tracking.TrackingResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingResponse;
 import com.example.easyexpressbackend.service.TrackingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/trackings")
-public class TrackingController {
+@RequestMapping(path = "/api/public/trackings")
+public class PublicTrackingController {
     private final TrackingService service;
 
     @Autowired
-    public TrackingController(TrackingService service) {
+    public PublicTrackingController(TrackingService service) {
         this.service = service;
     }
 
