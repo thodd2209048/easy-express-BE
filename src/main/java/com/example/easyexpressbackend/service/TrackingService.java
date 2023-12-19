@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.service;
 
-import com.example.easyexpressbackend.constant.Status;
+import com.example.easyexpressbackend.constant.ShipmentStatus;
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
 import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.entity.Tracking;
@@ -91,28 +91,28 @@ public class TrackingService {
         trackingResponse.setHub(hubResponse);
     }
 
-    private boolean isValidNextStatus(Status lastStatus, Status newStatus) {
-        switch (lastStatus) {
+    private boolean isValidNextStatus(ShipmentStatus lastShipmentStatus, ShipmentStatus newShipmentStatus) {
+        switch (lastShipmentStatus) {
 
             case SHIPMENT_INFORMATION_RECEIVED -> {
-                List<Status> nextStatusList = List.of(Status.PICKED_UP);
-                if (nextStatusList.contains(newStatus)) return true;
+                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.PICKED_UP);
+                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
             }
             case PICKED_UP -> {
-                List<Status> nextStatusList = List.of(Status.ARRIVED);
-                if (nextStatusList.contains(newStatus)) return true;
+                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.ARRIVED);
+                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
             }
             case ARRIVED -> {
-                List<Status> nextStatusList = List.of(Status.PROCESSED);
-                if (nextStatusList.contains(newStatus)) return true;
+                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.PROCESSED);
+                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
             }
             case PROCESSED -> {
-                List<Status> nextStatusList = List.of(Status.DEPARTED, Status.RETURNED_TO_SENDER);
-                if (nextStatusList.contains(newStatus)) return true;
+                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.DEPARTED, ShipmentStatus.RETURNED_TO_SENDER);
+                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
             }
             case DEPARTED -> {
-                List<Status> nextStatusList = List.of(Status.PROCESSED, Status.DELIVERED, Status.ARRIVED);
-                if (nextStatusList.contains(newStatus)) return true;
+                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.PROCESSED, ShipmentStatus.DELIVERED, ShipmentStatus.ARRIVED);
+                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
             }
         }
         return false;
@@ -131,18 +131,18 @@ public class TrackingService {
         if (lastTrackingOptional.isEmpty())
             throw new ObjectNotFoundException("Tracking with number: " + number + " does exist.");
         Tracking lastTracking = lastTrackingOptional.get();
-        Status lastStatus = lastTracking.getStatus();
-        List<Status> completedStatuses = List.of(Status.DELIVERED, Status.RETURNED_TO_SENDER);
-        if (completedStatuses.contains(lastStatus)) {
+        ShipmentStatus lastShipmentStatus = lastTracking.getShipmentStatus();
+        List<ShipmentStatus> completedShipmentStatuses = List.of(ShipmentStatus.DELIVERED, ShipmentStatus.RETURNED_TO_SENDER);
+        if (completedShipmentStatuses.contains(lastShipmentStatus)) {
             throw new ActionNotAllowedException("Tracking cannot be added to a completed shipment");
         }
-        Status nextStatus = addTrackingDto.getStatus();
-        boolean isStatusValid = this.isValidNextStatus(lastStatus, nextStatus);
-        if (!isStatusValid) throw new InvalidValueException("The new status: " + nextStatus + " is invalid.");
+        ShipmentStatus nextShipmentStatus = addTrackingDto.getShipmentStatus();
+        boolean isStatusValid = this.isValidNextStatus(lastShipmentStatus, nextShipmentStatus);
+        if (!isStatusValid) throw new InvalidValueException("The new status: " + nextShipmentStatus + " is invalid.");
 //check hub
         hubService.findById(addTrackingDto.getHubId());
-        List<Status> atSameHubStatuses = List.of(Status.ARRIVED,Status.PROCESSED, Status.DEPARTED, Status.DELIVERED, Status.RETURNED_TO_SENDER);
-        if (atSameHubStatuses.contains(nextStatus)) {
+        List<ShipmentStatus> atSameHubShipmentStatuses = List.of(ShipmentStatus.ARRIVED, ShipmentStatus.PROCESSED, ShipmentStatus.DEPARTED, ShipmentStatus.DELIVERED, ShipmentStatus.RETURNED_TO_SENDER);
+        if (atSameHubShipmentStatuses.contains(nextShipmentStatus)) {
             Long newHubId = addTrackingDto.getHubId();
             Long lastHubId = lastTracking.getHubId();
             if (!newHubId.equals(lastHubId))

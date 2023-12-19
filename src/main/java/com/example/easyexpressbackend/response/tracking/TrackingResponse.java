@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.response.tracking;
 
-import com.example.easyexpressbackend.constant.Status;
+import com.example.easyexpressbackend.constant.ShipmentStatus;
 import com.example.easyexpressbackend.response.HubResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +17,5 @@ public class TrackingResponse {
     private String timeString;
     private String shipmentNumber;
     private HubResponse hub;
-    private Status status;
+    private ShipmentStatus shipmentStatus;
 }

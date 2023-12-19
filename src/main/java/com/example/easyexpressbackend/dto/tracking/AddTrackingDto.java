@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.dto.tracking;
 
-import com.example.easyexpressbackend.constant.Status;
+import com.example.easyexpressbackend.constant.ShipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,5 +12,5 @@ public class AddTrackingDto {
     private String shipmentNumber;
     private Long staffId;
     private Long hubId;
-    private Status status;
+    private ShipmentStatus shipmentStatus;
 }
