@@ -7,7 +7,8 @@ public enum Status {
     ARRIVED("Arrived"),
     PROCESSED("Processed"),
     DEPARTED("Departed"),
-    DELIVERED("Delivered");
+    DELIVERED("Delivered"),
+    RETURNED_TO_SENDER("Return to sender");
 
     private String value;
 

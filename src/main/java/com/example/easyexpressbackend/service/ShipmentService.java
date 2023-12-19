@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.service;
 
+import com.example.easyexpressbackend.constant.Status;
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
 import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
@@ -8,6 +9,7 @@ import com.example.easyexpressbackend.repository.ShipmentRepository;
 import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.usertype.StaticUserTypeSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

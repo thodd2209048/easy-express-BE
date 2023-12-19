@@ -18,7 +18,8 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = false)
 public class Tracking extends BaseEntity{
     private String shipmentNumber;
+    private Long hubId;
     private Long staffId;
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
 }
