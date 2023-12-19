@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.controller.tracking;
 
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
-import com.example.easyexpressbackend.response.tracking.TrackingResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.service.TrackingService;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class TrackingController {
     }
 
     @PostMapping({"/",""})
-    public TrackingResponse addTracking(@RequestBody @Valid AddTrackingDto addTrackingDto){
+    public TrackingPrivateResponse addTracking(@RequestBody @Valid AddTrackingDto addTrackingDto){
         return service.addTracking(addTrackingDto);
     }
 }

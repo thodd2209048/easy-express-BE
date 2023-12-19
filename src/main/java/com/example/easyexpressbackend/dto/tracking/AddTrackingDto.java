@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class AddTrackingDto {
     private String shipmentNumber;
     private Long staffId;
+    private Long hubId;
     private Status status;
 }

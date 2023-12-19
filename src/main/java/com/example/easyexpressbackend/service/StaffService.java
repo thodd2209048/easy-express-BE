@@ -36,6 +36,10 @@ public class StaffService {
                 .map(this::convertToStaffResponse);
     }
 
+    public StaffResponse findStaffResponseById(Long id) {
+        return mapper.staffToStaffResponse(this.findById(id));
+    }
+
     public StaffResponse addStaff(AddStaffDto addStaffDto) {
         Long hubId = addStaffDto.getHubId();
         boolean existHub = hubService.existsById(hubId);
@@ -67,11 +71,11 @@ public class StaffService {
 
     public void deleteStaff(Long id) {
         boolean exist = repository.existsById(id);
-        if(!exist) throw new ObjectNotFoundException("Staff with id: " + id + "does not exist");
+        if (!exist) throw new ObjectNotFoundException("Staff with id: " + id + "does not exist");
         repository.deleteById(id);
     }
 
-    private StaffResponse convertToStaffResponse(Staff staff){
+    private StaffResponse convertToStaffResponse(Staff staff) {
         StaffResponse staffResponse = mapper.staffToStaffResponse(staff);
         Hub hub = hubService.findById(staff.getHubId());
         String hubName = hub.getName();
@@ -79,10 +83,12 @@ public class StaffService {
         return staffResponse;
     }
 
-    public Staff findById(Long id){
+    public Staff findById(Long id) {
         Optional<Staff> optionalStaff = repository.findById(id);
-        if(optionalStaff.isEmpty())
+        if (optionalStaff.isEmpty())
             throw new ObjectNotFoundException("Staff with id: " + id + " does not exist");
         return optionalStaff.get();
     }
+
+
 }
