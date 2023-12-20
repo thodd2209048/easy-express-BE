@@ -45,7 +45,7 @@ public class TrackingService {
 
     public TrackingAShipmentResponse trackingAShipment(String shipmentNumber) {
         Shipment shipment = shipmentService.getShipment(shipmentNumber);
-        ShipmentPublicResponse shipmentPublicResponse = shipmentService.convertShipmentToShipmentShortResponse(shipment);
+        ShipmentPublicResponse shipmentPublicResponse = shipmentService.convertShipmentToShipmentPublicResponse(shipment);
 
         List<Tracking> trackingList = repository.findAllByShipmentNumberOrderByCreatedAtDesc(shipmentNumber);
         List<TrackingResponse> trackingResponseList = trackingList.stream()

@@ -2,6 +2,7 @@ package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.entity.region.District;
 import com.example.easyexpressbackend.entity.region.Province;
+import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.RegionMapper;
 import com.example.easyexpressbackend.repository.region.DistrictRepository;
 import com.example.easyexpressbackend.repository.region.ProvinceRepository;
@@ -15,9 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RegionService {
@@ -58,7 +57,7 @@ public class RegionService {
         districtRepository.saveAll(districts);
     }
     private void addProvinceToList(JsonNode provinceNode, Set<Province> provinces) {
-        Long code = provinceNode.get("code").asLong();
+        String code = provinceNode.get("code").asText();
         String name = provinceNode.get("name").asText();
         String codename = provinceNode.get("codename").asText();
         Province province = Province.builder()
@@ -70,10 +69,10 @@ public class RegionService {
     }
 
     private void addDistrictToList(JsonNode districtNode, Set<District> districts) {
-        Long code = districtNode.get("code").asLong();
+        String code = districtNode.get("code").asText();
         String name = districtNode.get("name").asText();
         String codename = districtNode.get("codename").asText();
-        Long provinceCode = districtNode.get("province_code").asLong();
+        String provinceCode = districtNode.get("province_code").asText();
         District district = District.builder()
                 .code(code)
                 .name(name)
@@ -90,10 +89,46 @@ public class RegionService {
                 .toList();
     }
 
-    public List<DistrictResponse> listDistrictInProvince(Long provinceCode) {
-        return districtRepository.findAllByProvinceCode(provinceCode).stream()
-                .map(mapper::districtToDistrictResponse)
+    public List<DistrictResponse> listDistrictByProvinceCode(String provinceCode) {
+        List<District> districts = provinceCode == null ?
+                districtRepository.findAll() : districtRepository.findAllByProvinceCode(provinceCode);
+        return districts.stream()
+                .map(this::convertDistrictToDistrictResponse)
                 .toList();
+    }
+
+    public DistrictResponse convertDistrictToDistrictResponse(District district){
+        if(district == null) return null;
+        DistrictResponse districtResponse = mapper.districtToDistrictResponse(district);
+        ProvinceResponse provinceResponse = findProvinceResponseByCode(district.getProvinceCode());
+        districtResponse.setProvince(provinceResponse);
+        return districtResponse;
+    }
+
+    private ProvinceResponse findProvinceResponseByCode(String code){
+        if(code == null) return null;
+        Province province = findProvinceByCode(code);
+        return mapper.provinceToProvinceResponse(province);
+    }
+
+    private Province findProvinceByCode(String code){
+        if(code == null) return null;
+        Optional<Province> provinceOptional = provinceRepository.findByCode(code);
+        if(provinceOptional.isEmpty())throw new ObjectNotFoundException("Province with code: "+ code + " does not exist.");
+        return provinceOptional.get();
+    }
+
+    public District getDistrictByCode(String code){
+        if(code == null) return null;
+        Optional<District> districtOptional = districtRepository.findByCode(code);
+        if(districtOptional.isEmpty()) throw new ObjectNotFoundException("District with code: " + code + " does not exist.");
+        return districtOptional.get();
+    }
+
+    public DistrictResponse getDistrictResponseByCode(String code){
+        if(code == null) return null;
+        District district = this.getDistrictByCode(code);
+        return this.convertDistrictToDistrictResponse(district);
     }
 }
 

@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class UpdateHubDto {
         private String name;
         private String location;
+        private String districtCode;
 }

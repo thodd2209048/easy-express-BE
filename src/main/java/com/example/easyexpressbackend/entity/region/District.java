@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class District extends BaseEntity {
     private String name;
-    private Long code;
+    private String code;
     private String codename;
-    private Long provinceCode;
+    private String provinceCode;
 }

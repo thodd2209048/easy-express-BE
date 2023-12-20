@@ -14,6 +14,7 @@ public interface RegionMapper {
 
     ProvinceResponse provinceToProvinceResponse(Province province);
 
+    @Mapping(target = "province", ignore = true)
     DistrictResponse districtToDistrictResponse(District district);
 
 }

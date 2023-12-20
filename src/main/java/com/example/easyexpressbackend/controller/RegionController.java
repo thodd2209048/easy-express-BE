@@ -1,10 +1,8 @@
 package com.example.easyexpressbackend.controller;
 
-import com.example.easyexpressbackend.entity.region.Province;
 import com.example.easyexpressbackend.response.region.DistrictResponse;
 import com.example.easyexpressbackend.response.region.ProvinceResponse;
 import com.example.easyexpressbackend.service.RegionService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +27,7 @@ public class RegionController {
     }
 
     @GetMapping("/districts")
-    public List<DistrictResponse> listDistrictInProvince(@RequestParam("province-code") Long provinceCode){
-        return service.listDistrictInProvince(provinceCode);
+    public List<DistrictResponse> listDistrictInProvince(@RequestParam(value = "province-code", required = false)  String provinceCode){
+        return service.listDistrictByProvinceCode(provinceCode);
     }
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class DistrictResponse {
     private Long id;
     private String name;
-    private Long code;
+    private String code;
     private String codename;
-    private Long provinceCode;
+    private ProvinceResponse province;
 }

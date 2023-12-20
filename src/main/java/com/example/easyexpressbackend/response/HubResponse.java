@@ -12,4 +12,5 @@ public class HubResponse {
     private Long id;
     private String name;
     private String location;
+    private String districtCode;
 }

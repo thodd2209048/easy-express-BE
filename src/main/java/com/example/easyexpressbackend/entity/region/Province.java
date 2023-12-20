@@ -16,6 +16,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Province extends BaseEntity {
     private String name;
-    private Long code;
+    private String code;
     private String codename;
 }

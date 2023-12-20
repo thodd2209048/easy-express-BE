@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class ProvinceResponse {
     private Long id;
     private String name;
-    private Long code;
+    private String code;
     private String codename;
 }

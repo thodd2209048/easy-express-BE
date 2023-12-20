@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddShipmentDto {
+//    sender
     @NotEmpty
     private String senderName;
     @NotEmpty
@@ -19,11 +20,17 @@ public class AddShipmentDto {
     @NotEmpty
     private String senderAddress;
     @NotEmpty
+    private String senderDistrictCode;
+//    receiver
+    @NotEmpty
     private String receiverName;
     @NotEmpty
     private String receiverPhone;
     @NotEmpty
     private String receiverAddress;
+    @NotEmpty
+    private String receiverDistrictCode;
+//    details
     @NotNull
     @Min(0)
     private Double valueInDollar;

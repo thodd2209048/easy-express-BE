@@ -18,8 +18,13 @@ public interface ShipmentMapper {
     @Mapping(target = "number", ignore = true)
     Shipment addShipmentToShipment(AddShipmentDto addShipmentDto);
 
+    @Mapping(target = "senderDistrict", ignore = true)
+    @Mapping(target = "receiverDistrict", ignore = true)
     ShipmentResponse shipmentToShipmentResponse(Shipment shipment);
-    ShipmentPublicResponse shipmentToSortShipmentResponse(Shipment shipment);
+
+    @Mapping(target = "senderDistrict", ignore = true)
+    @Mapping(target = "receiverDistrict", ignore = true)
+    ShipmentPublicResponse shipmentToShipmentPublicResponse(Shipment shipment);
 
     Shipment copy(Shipment shipment);
 
