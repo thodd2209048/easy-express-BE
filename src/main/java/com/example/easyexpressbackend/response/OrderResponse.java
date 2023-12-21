@@ -1,38 +1,33 @@
-package com.example.easyexpressbackend.entity;
+package com.example.easyexpressbackend.response;
 
 import com.example.easyexpressbackend.constant.OrderStatus;
+import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
-@Entity
-@Table(name = "orders")
-@EqualsAndHashCode(callSuper=false)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
-
-public class Order extends BaseEntity{
+@Builder
+public class OrderResponse {
     private OrderStatus status;
-//    sender
+    //    sender
     private String senderName;
     private String senderPhone;
     private String senderAddress;
-    private String districtCode;
-//    time
-    private ZonedDateTime startTime;
-    private ZonedDateTime endTime;
-//    shipment details
-    @Column(columnDefinition = "text")
+    private DistrictResponse district;
+    //    time
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime startTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endTime;
+    //    order details
     private String description;
     private Double weightInKg;
     private Double lengthInCm;
