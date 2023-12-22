@@ -2,7 +2,6 @@ package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
 import com.example.easyexpressbackend.entity.Shipment;
-import com.example.easyexpressbackend.entity.region.District;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.ShipmentMapper;
 import com.example.easyexpressbackend.repository.ShipmentRepository;
@@ -43,7 +42,6 @@ public class ShipmentService {
     }
 
     public ShipmentResponse addShipment(AddShipmentDto addShipmentDto) {
-        if(addShipmentDto == null) return null;
         Shipment shipment = mapper.addShipmentToShipment(addShipmentDto);
         String number = RandomStringUtils.randomNumeric(10);
         shipment.setNumber(number);
@@ -52,13 +50,12 @@ public class ShipmentService {
         return this.convertShipmentToShipmentResponse(shipment);
     }
 
-    public boolean exist(String number) {
-        if(number == null) return false;
-        return repository.existsByNumber(number);
+    public void validateShipmentNumber(String number) {
+        if(!repository.existsByNumber(number))
+            throw new ObjectNotFoundException("Shipment with number: " + number + " does exist.");
     }
 
     public Shipment getShipment(String number) {
-        if(number == null) return null;
         Optional<Shipment> optionalShipment = repository.findByNumber(number);
         if (optionalShipment.isEmpty()) throw new ObjectNotFoundException(
                 "Shipment with number: " + number + " does not exist");

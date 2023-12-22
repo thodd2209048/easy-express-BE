@@ -8,19 +8,18 @@ import com.example.easyexpressbackend.exception.ActionNotAllowedException;
 import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.TrackingMapper;
-import com.example.easyexpressbackend.response.StaffResponse;
-import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
-import com.example.easyexpressbackend.response.tracking.TrackingResponse;
 import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
+import com.example.easyexpressbackend.response.StaffResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingResponse;
 import com.example.easyexpressbackend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TrackingService {
@@ -60,7 +59,7 @@ public class TrackingService {
 
     public TrackingPrivateResponse addTracking(AddTrackingDto addTrackingDto) {
         System.out.println(addTrackingDto);
-        this.isValid(addTrackingDto);
+        this.validateAddTrackingDto(addTrackingDto);
         Tracking tracking = mapper.addTrackingToTracking(addTrackingDto);
         repository.save(tracking);
         return this.convertTrackingToTrackingPrivateResponse(tracking);
@@ -82,73 +81,68 @@ public class TrackingService {
         return trackingResponse;
     }
 
-    private <T extends TrackingResponse> void convertToTrackingResponseInformation(Tracking tracking, T trackingResponse ){
-        String timeString = Utils.convertToHumanTime(tracking.getCreatedAt());
+    private <T extends TrackingResponse> void convertToTrackingResponseInformation(Tracking tracking, T trackingResponse) {
         Long hubId = tracking.getHubId();
         HubResponse hubResponse = hubService.findHubResponseById(hubId);
-
-        trackingResponse.setTimeString(timeString);
         trackingResponse.setHub(hubResponse);
     }
 
-    private boolean isValidNextStatus(ShipmentStatus lastShipmentStatus, ShipmentStatus newShipmentStatus) {
-        switch (lastShipmentStatus) {
-
-            case SHIPMENT_INFORMATION_RECEIVED -> {
-                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.PICKED_UP);
-                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
-            }
-            case PICKED_UP -> {
-                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.ARRIVED);
-                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
-            }
-            case ARRIVED -> {
-                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.PROCESSED);
-                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
-            }
-            case PROCESSED -> {
-                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.DEPARTED, ShipmentStatus.RETURNED_TO_SENDER);
-                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
-            }
-            case DEPARTED -> {
-                List<ShipmentStatus> nextShipmentStatusList = List.of(ShipmentStatus.PROCESSED, ShipmentStatus.DELIVERED, ShipmentStatus.ARRIVED);
-                if (nextShipmentStatusList.contains(newShipmentStatus)) return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isValid(AddTrackingDto addTrackingDto) {
+    private boolean validateAddTrackingDto(AddTrackingDto addTrackingDto) {
 //check number
         String number = addTrackingDto.getShipmentNumber();
-        if (!shipmentService.exist(number))
-            throw new ObjectNotFoundException("Shipment with number: " + number + " does exist.");
+        shipmentService.validateShipmentNumber(number);
+
 //check staff
         Long staffId = addTrackingDto.getStaffId();
-        staffService.findById(staffId);
+        staffService.validateId(staffId);
+
 //check status
-        Optional<Tracking> lastTrackingOptional = repository.findLastTrackingOfShipmentNumber(number);
-        if (lastTrackingOptional.isEmpty())
-            throw new ObjectNotFoundException("Tracking with number: " + number + " does exist.");
-        Tracking lastTracking = lastTrackingOptional.get();
+        Tracking lastTracking = repository.findLastTrackingOfShipmentNumber(number)
+                .orElseThrow(() -> new ObjectNotFoundException("Tracking with number: " + number + " does not exist."));
         ShipmentStatus lastShipmentStatus = lastTracking.getShipmentStatus();
+
         List<ShipmentStatus> completedShipmentStatuses = List.of(ShipmentStatus.DELIVERED, ShipmentStatus.RETURNED_TO_SENDER);
         if (completedShipmentStatuses.contains(lastShipmentStatus)) {
             throw new ActionNotAllowedException("Tracking cannot be added to a completed shipment");
         }
+
         ShipmentStatus nextShipmentStatus = addTrackingDto.getShipmentStatus();
-        boolean isStatusValid = this.isValidNextStatus(lastShipmentStatus, nextShipmentStatus);
-        if (!isStatusValid) throw new InvalidValueException("The new status: " + nextShipmentStatus + " is invalid.");
+        this.validateNextStatus(lastShipmentStatus, nextShipmentStatus);
 //check hub
-        hubService.findById(addTrackingDto.getHubId());
-        List<ShipmentStatus> atSameHubShipmentStatuses = List.of(ShipmentStatus.ARRIVED, ShipmentStatus.PROCESSED, ShipmentStatus.DEPARTED, ShipmentStatus.DELIVERED, ShipmentStatus.RETURNED_TO_SENDER);
-        if (atSameHubShipmentStatuses.contains(nextShipmentStatus)) {
-            Long newHubId = addTrackingDto.getHubId();
-            Long lastHubId = lastTracking.getHubId();
-            if (!newHubId.equals(lastHubId))
-                throw new InvalidValueException("This status cannot be updated at a different hub.");
+        hubService.validate(addTrackingDto.getHubId());
+
+        Long newHubId = addTrackingDto.getHubId();
+        Long lastHubId = lastTracking.getHubId();
+        if (lastShipmentStatus != ShipmentStatus.DEPARTED
+                && nextShipmentStatus != ShipmentStatus.ARRIVED
+                && !newHubId.equals(lastHubId)) {
+            throw new InvalidValueException("This status cannot be updated at a different hub.");
         }
         return true;
     }
 
+    private void validateNextStatus(ShipmentStatus lastShipmentStatus, ShipmentStatus newShipmentStatus) {
+        List<ShipmentStatus> nextShipmentStatusList =
+                switch (lastShipmentStatus) {
+                    case SHIPMENT_INFORMATION_RECEIVED -> List.of(ShipmentStatus.PICKED_UP);
+                    case PICKED_UP -> List.of(ShipmentStatus.ARRIVED);
+                    case ARRIVED -> List.of(ShipmentStatus.PROCESSED);
+                    case PROCESSED -> List.of(ShipmentStatus.DEPARTED, ShipmentStatus.RETURNED_TO_SENDER);
+                    case DEPARTED ->
+                            List.of(ShipmentStatus.PROCESSED, ShipmentStatus.DELIVERED, ShipmentStatus.ARRIVED);
+                    default -> List.of();
+                };
+        if (!nextShipmentStatusList.contains(newShipmentStatus))
+            throw new InvalidValueException("The new status: " + newShipmentStatus + " is invalid.");
+    }
+
+    public void addFirstTracking(String number){
+        shipmentService.validateShipmentNumber(number);
+        Tracking tracking = Tracking.builder()
+                .shipmentNumber(number)
+                .shipmentStatus(ShipmentStatus.SHIPMENT_INFORMATION_RECEIVED)
+                .build();
+
+        repository.save(tracking);
+    }
 }

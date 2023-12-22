@@ -14,7 +14,6 @@ import java.time.ZonedDateTime;
 public class TrackingResponse {
     private Long id;
     private ZonedDateTime createdAt;
-    private String timeString;
     private String shipmentNumber;
     private HubResponse hub;
     private ShipmentStatus shipmentStatus;
