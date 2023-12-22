@@ -1,11 +1,10 @@
 package com.example.easyexpressbackend.exception;
 
-public class DuplicateObjectException extends RuntimeException{
-    public DuplicateObjectException(String message) {
-        super(message);
-    }
+import com.example.easyexpressbackend.exception.base.BaseException;
+import org.springframework.http.HttpStatus;
 
-    public DuplicateObjectException(String message, Throwable cause) {
-        super(message, cause);
+public class DuplicateObjectException extends BaseException {
+    public DuplicateObjectException(String message) {
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

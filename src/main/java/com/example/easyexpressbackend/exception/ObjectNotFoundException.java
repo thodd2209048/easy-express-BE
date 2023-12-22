@@ -1,11 +1,11 @@
 package com.example.easyexpressbackend.exception;
 
-public class ObjectNotFoundException extends RuntimeException{
-    public ObjectNotFoundException(String message) {
-        super(message);
-    }
+import com.example.easyexpressbackend.exception.base.BaseException;
+import org.springframework.http.HttpStatus;
 
-    public ObjectNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+public class ObjectNotFoundException extends BaseException {
+
+    public ObjectNotFoundException(String message) {
+        super(message, HttpStatus.NOT_FOUND);
     }
 }

@@ -1,11 +1,16 @@
 package com.example.easyexpressbackend.exception;
 
-public class ActionNotAllowedException extends RuntimeException{
-    public ActionNotAllowedException(String message) {
-        super(message);
-    }
+import com.example.easyexpressbackend.exception.base.BaseException;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
-    public ActionNotAllowedException(String message, Throwable cause) {
-        super(message, cause);
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ActionNotAllowedException extends BaseException {
+    public ActionNotAllowedException(String message) {
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

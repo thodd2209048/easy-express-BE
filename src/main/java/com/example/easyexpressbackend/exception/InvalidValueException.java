@@ -1,11 +1,11 @@
 package com.example.easyexpressbackend.exception;
 
-public class InvalidValueException extends RuntimeException{
-    public InvalidValueException(String message) {
-        super(message);
-    }
+import com.example.easyexpressbackend.exception.base.BaseException;
+import org.springframework.http.HttpStatus;
 
-    public InvalidValueException(String message, Throwable cause) {
-        super(message, cause);
+public class InvalidValueException extends BaseException {
+
+    public InvalidValueException(String message) {
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }
