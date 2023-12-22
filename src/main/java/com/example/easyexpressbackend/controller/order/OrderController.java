@@ -6,6 +6,7 @@ import com.example.easyexpressbackend.dto.order.UpdateOrderDto;
 import com.example.easyexpressbackend.response.OrderResponse;
 import com.example.easyexpressbackend.service.OrderService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,12 +40,12 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public OrderResponse updateOrder(@PathVariable Long id, @RequestBody UpdateOrderDto updateOrderDto) {
+    public OrderResponse updateOrder(@PathVariable @NotNull Long id, @RequestBody UpdateOrderDto updateOrderDto) {
         return service.updateOrder(id, updateOrderDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id) {
+    public void deleteOrder(@PathVariable @NotNull Long id) {
         service.deleteOrder(id);
     }
 }

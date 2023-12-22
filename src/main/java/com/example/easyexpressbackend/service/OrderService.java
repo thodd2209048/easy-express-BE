@@ -44,9 +44,6 @@ public class OrderService {
     }
 
     public OrderResponse addOrder(AddOrderDto addOrderDto) {
-        if (addOrderDto == null)
-            throw new InvalidValueException("The order data is null.");
-
         Order order = mapper.addOrderToOrder(addOrderDto);
         order.setStatus(OrderStatus.ORDER_INFORMATION_RECEIVED);
         repository.save(order);
@@ -76,10 +73,6 @@ public class OrderService {
     }
 
     public Order findOrderById(Long id) {
-        if (id == null) {
-            throw new InvalidValueException("Order id can not be null");
-        }
-
         Optional<Order> orderOptional = repository.findById(id);
         if (orderOptional.isEmpty()) throw new ObjectNotFoundException("Order with id: " + id + " does not exist.");
 

@@ -34,6 +34,7 @@ public class AddShipmentDto {
     @NotNull
     @Min(0)
     private Double valueInDollar;
+    @NotEmpty
     private String description;
     @NotNull
     @Positive
