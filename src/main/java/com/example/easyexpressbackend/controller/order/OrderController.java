@@ -26,11 +26,11 @@ public class OrderController {
     @GetMapping({"/", ""})
     public Page<OrderResponse> listOrder(
             Pageable pageable,
-            @RequestParam(value = "status", required = false) OrderStatus status
-//            @RequestParam(value = "start", required = false) ZonedDateTime startTime
+            @RequestParam(value = "status", required = false) OrderStatus status,
+            @RequestParam(value = "start", required = false) ZonedDateTime startTime
 
     ) {
-        return service.listOrderResponseByStatusAndDateRange(pageable, status);
+        return service.listOrderResponseByStatusAndDateRange(pageable, status, startTime);
     }
 
     @PostMapping({"", "/"})

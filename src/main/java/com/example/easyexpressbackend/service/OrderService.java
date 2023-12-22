@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Service
@@ -34,10 +35,11 @@ public class OrderService {
     }
 
     public Page<OrderResponse> listOrderResponseByStatusAndDateRange(Pageable pageable,
-                                                                     OrderStatus status
+                                                                     OrderStatus status,
+                                                                     ZonedDateTime startTime
                                                                      ) {
-//        ZonedDateTime endTime = startTime == null ? null : startTime.plusDays(1);
-        Page<Order> orders = repository.getOrdersByStatus(pageable, status);
+        ZonedDateTime endTime = startTime == null ? null : startTime.plusDays(1);
+        Page<Order> orders = repository.getOrdersByStatus(pageable, status, startTime, endTime);
         return orders.map(this::convertOrderToOrderResponse);
     }
 

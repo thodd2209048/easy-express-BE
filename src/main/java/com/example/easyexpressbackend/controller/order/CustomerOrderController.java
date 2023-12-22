@@ -11,8 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
+
 @RestController
-@RequestMapping(path = "/api/orders")
+@RequestMapping(path = "/api/customer/orders")
 public class CustomerOrderController {
     private final OrderService service;
 
@@ -24,11 +26,11 @@ public class CustomerOrderController {
     @GetMapping({"/", ""})
     public Page<OrderResponse> listOrder(
             Pageable pageable,
-            @RequestParam(value = "status", required = false) OrderStatus status
-//            @RequestParam(value = "start", required = false) ZonedDateTime startTime
+            @RequestParam(value = "status", required = false) OrderStatus status,
+            @RequestParam(value = "start", required = false) ZonedDateTime startTime
 
     ) {
-        return service.listOrderResponseByStatusAndDateRange(pageable, status);
+        return service.listOrderResponseByStatusAndDateRange(pageable, status, startTime);
     }
 
     @PostMapping({"", "/"})
