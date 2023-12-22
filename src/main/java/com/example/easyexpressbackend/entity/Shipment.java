@@ -20,10 +20,12 @@ public class Shipment extends BaseEntity{
     private String senderName;
     private String senderPhone;
     private String senderAddress;
+    private String senderDistrictCode;
 //    TO
     private String receiverName;
     private String receiverPhone;
     private String receiverAddress;
+    private String receiverDistrictCode;
 //    SHIPMENT DETAILS
     @Column(columnDefinition = "text")
     private String description;

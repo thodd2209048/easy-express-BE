@@ -1,6 +1,5 @@
 package com.example.easyexpressbackend.repository;
 
-import com.example.easyexpressbackend.constant.Status;
 import com.example.easyexpressbackend.entity.Tracking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

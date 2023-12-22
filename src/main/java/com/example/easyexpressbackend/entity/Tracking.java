@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.entity;
 
-import com.example.easyexpressbackend.constant.Status;
+import com.example.easyexpressbackend.constant.ShipmentStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,5 +21,5 @@ public class Tracking extends BaseEntity{
     private Long hubId;
     private Long staffId;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private ShipmentStatus shipmentStatus;
 }

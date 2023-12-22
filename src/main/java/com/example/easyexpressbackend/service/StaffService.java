@@ -90,5 +90,8 @@ public class StaffService {
         return optionalStaff.get();
     }
 
-
+    public void validateId(Long id) {
+        if (!repository.existsById(id))
+            throw new ObjectNotFoundException("Staff with id: " + id + " does not exist");
+    }
 }

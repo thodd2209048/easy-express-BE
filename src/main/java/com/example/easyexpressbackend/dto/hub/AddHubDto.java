@@ -15,4 +15,6 @@ public class AddHubDto {
     private String name;
     @NotEmpty
     private String location;
+    @NotEmpty
+    private String districtCode;
 }

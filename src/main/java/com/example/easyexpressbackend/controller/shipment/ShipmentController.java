@@ -31,8 +31,5 @@ public class ShipmentController {
         return service.getShipmentResponse(number);
     }
 
-    @PostMapping({"","/"})
-    public ShipmentResponse addShipment(@RequestBody @Valid AddShipmentDto addShipmentDto){
-        return service.addShipment(addShipmentDto);
-    }
+
 }

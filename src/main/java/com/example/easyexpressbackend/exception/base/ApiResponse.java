@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.exception;
+package com.example.easyexpressbackend.exception.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 @AllArgsConstructor
 @Data
-public class ApiException {
+public class ApiResponse {
     private final String message;
     private final HttpStatus httpStatus;
     private final ZonedDateTime timestamp;

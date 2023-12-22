@@ -1,6 +1,6 @@
-package com.example.easyexpressbackend.entity;
+package com.example.easyexpressbackend.entity.region;
 
-import jakarta.persistence.Column;
+import com.example.easyexpressbackend.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,15 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper=false)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class Hub extends BaseEntity {
-    @Column(unique = true)
+public class Province extends BaseEntity {
     private String name;
-    @Column(unique = true)
-    private String location;
-    private String districtCode;
+    private String code;
+    private String codename;
 }

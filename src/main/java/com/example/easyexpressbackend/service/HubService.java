@@ -69,21 +69,26 @@ public class HubService {
 
     public void deleteHub(Long id) {
         boolean exist = repository.existsById(id);
-        if(!exist) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
+        if (!exist) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
         repository.deleteById(id);
     }
 
-    public boolean existsById (Long id){
+    public boolean existsById(Long id) {
         return repository.existsById(id);
     }
 
-    public Hub findById(Long id){
+    public Hub findById(Long id) {
         Optional<Hub> optionalHub = repository.findById(id);
         if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
         return optionalHub.get();
     }
 
-    public HubResponse findHubResponseById(Long id){
+    public void validate(Long id) {
+        if (!repository.existsById(id))
+            throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
+    }
+
+    public HubResponse findHubResponseById(Long id) {
         return mapper.hubToHubResponse(this.findById(id));
     }
 }

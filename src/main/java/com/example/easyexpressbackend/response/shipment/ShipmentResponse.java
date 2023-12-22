@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.response.shipment;
 
+import com.example.easyexpressbackend.response.region.DistrictResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,12 @@ public class ShipmentResponse {
     private String senderName;
     private String senderPhone;
     private String senderAddress;
+    private DistrictResponse senderDistrict;
 //    TO
     private String receiverName;
     private String receiverPhone;
     private String receiverAddress;
+    private DistrictResponse receiverDistrict;
 //    SHIPMENT DETAILS
     private Double valueInDollar;
     private String description;

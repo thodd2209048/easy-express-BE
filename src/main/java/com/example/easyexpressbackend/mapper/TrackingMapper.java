@@ -17,12 +17,10 @@ public interface TrackingMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Tracking addTrackingToTracking (AddTrackingDto addTrackingDto);
 
-    @Mapping(target = "timeString", ignore = true)
     @Mapping(target = "hub", ignore = true)
     @Mapping(target = "staff", ignore = true)
     TrackingPrivateResponse trackingToTrackingPrivateResponse(Tracking tracking);
 
-    @Mapping(target = "timeString", ignore = true)
     @Mapping(target = "hub", ignore = true)
     TrackingResponse trackingToTrackingResponse(Tracking tracking);
 
