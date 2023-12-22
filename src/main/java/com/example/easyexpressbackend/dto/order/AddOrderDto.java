@@ -93,7 +93,7 @@ public class AddOrderDto {
 
         LocalDate startTimeDate = startTime.withZoneSameLocal(ZoneId.systemDefault()).toLocalDate();
         LocalDate endTimeDate = endTime.withZoneSameLocal(ZoneId.systemDefault()).toLocalDate();
-        if (endTimeDate.isEqual(startTimeDate)) {
+        if (!endTimeDate.isEqual(startTimeDate)) {
             throw new InvalidValueException("End time must be on the same day as start time.");
         }
 

@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.controller;
+package com.example.easyexpressbackend.controller.order;
 
 import com.example.easyexpressbackend.constant.OrderStatus;
 import com.example.easyexpressbackend.dto.order.AddOrderDto;
@@ -11,15 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
-
 @RestController
 @RequestMapping(path = "/api/orders")
-public class OrderController {
+public class CustomerOrderController {
     private final OrderService service;
 
     @Autowired
-    public OrderController(OrderService service) {
+    public CustomerOrderController(OrderService service) {
         this.service = service;
     }
 
@@ -36,11 +34,6 @@ public class OrderController {
     @PostMapping({"", "/"})
     public OrderResponse addOrder(@RequestBody @Valid AddOrderDto addOrderDto) {
         return service.addOrder(addOrderDto);
-    }
-
-    @PutMapping("/{id}")
-    public OrderResponse updateOrder(@PathVariable Long id, @RequestBody UpdateOrderDto updateOrderDto) {
-        return service.updateOrder(id, updateOrderDto);
     }
 
     @DeleteMapping("/{id}")
