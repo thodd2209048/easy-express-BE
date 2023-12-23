@@ -113,6 +113,8 @@ public class TrackingService {
 //check hub
         hubService.validate(addTrackingDto.getHubId());
 
+        if (lastShipmentStatus == ShipmentStatus.SHIPMENT_INFORMATION_RECEIVED) return true;
+
         Long newHubId = addTrackingDto.getHubId();
         Long lastHubId = lastTracking.getHubId();
         if (lastShipmentStatus != ShipmentStatus.DEPARTED
@@ -120,6 +122,7 @@ public class TrackingService {
                 && !newHubId.equals(lastHubId)) {
             throw new InvalidValueException("This status cannot be updated at a different hub.");
         }
+
         return true;
     }
 
@@ -129,9 +132,10 @@ public class TrackingService {
                     case SHIPMENT_INFORMATION_RECEIVED -> List.of(ShipmentStatus.PICKED_UP);
                     case PICKED_UP -> List.of(ShipmentStatus.ARRIVED);
                     case ARRIVED -> List.of(ShipmentStatus.PROCESSED);
-                    case PROCESSED -> List.of(ShipmentStatus.DEPARTED, ShipmentStatus.RETURNED_TO_SENDER);
+                    case PROCESSED -> List.of(ShipmentStatus.DEPARTED, ShipmentStatus.WAITING_TO_RETURN);
                     case DEPARTED ->
                             List.of(ShipmentStatus.PROCESSED, ShipmentStatus.DELIVERED, ShipmentStatus.ARRIVED);
+                    case WAITING_TO_RETURN -> List.of(ShipmentStatus.RETURNED_TO_SENDER);
                     default -> List.of();
                 };
         if (!nextShipmentStatusList.contains(newShipmentStatus))

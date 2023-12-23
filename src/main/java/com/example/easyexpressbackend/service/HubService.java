@@ -90,6 +90,6 @@ public class HubService {
     // ---------- VALIDATE ----------
     public void validate(Long id) {
         if (!repository.existsById(id))
-            throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
+            throw new ObjectNotFoundException("Hub with id: " + id + " does not exist");
     }
 }

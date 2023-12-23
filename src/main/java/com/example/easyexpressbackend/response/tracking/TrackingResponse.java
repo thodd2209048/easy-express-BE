@@ -19,4 +19,5 @@ public class TrackingResponse {
     private HubResponse hub;
     private DistrictResponse district;
     private ShipmentStatus shipmentStatus;
+    private String newShipmentNumber;
 }

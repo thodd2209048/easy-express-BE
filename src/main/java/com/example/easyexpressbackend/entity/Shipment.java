@@ -34,4 +34,6 @@ public class Shipment extends BaseEntity{
     private Double lengthInCm;
     private Double widthInCm;
     private Double heightInCm;
+//  NEW SHIPMENT
+    private String newNumber;
 }
