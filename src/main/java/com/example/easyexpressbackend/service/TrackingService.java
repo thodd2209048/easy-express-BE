@@ -2,6 +2,7 @@ package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.constant.ShipmentStatus;
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
+import com.example.easyexpressbackend.entity.Hub;
 import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.entity.Tracking;
 import com.example.easyexpressbackend.exception.ActionNotAllowedException;
@@ -11,11 +12,11 @@ import com.example.easyexpressbackend.mapper.TrackingMapper;
 import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
 import com.example.easyexpressbackend.response.StaffResponse;
+import com.example.easyexpressbackend.response.region.DistrictResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingResponse;
-import com.example.easyexpressbackend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,18 +29,21 @@ public class TrackingService {
     private final ShipmentService shipmentService;
     private final StaffService staffService;
     private final HubService hubService;
+    private final RegionService regionService;
 
     @Autowired
     public TrackingService(TrackingRepository repository,
                            TrackingMapper mapper,
                            ShipmentService shipmentService,
                            StaffService staffService,
-                           HubService hubService) {
+                           HubService hubService,
+                           RegionService regionService) {
         this.repository = repository;
         this.mapper = mapper;
         this.shipmentService = shipmentService;
         this.staffService = staffService;
         this.hubService = hubService;
+        this.regionService = regionService;
     }
 
     public TrackingAShipmentResponse trackingAShipment(String shipmentNumber) {
@@ -58,34 +62,32 @@ public class TrackingService {
     }
 
     public TrackingPrivateResponse addTracking(AddTrackingDto addTrackingDto) {
-        System.out.println(addTrackingDto);
         this.validateAddTrackingDto(addTrackingDto);
+
         Tracking tracking = mapper.addTrackingToTracking(addTrackingDto);
+
+        Hub hub = hubService.getHubById(addTrackingDto.getHubId());
+        String districtCode = hub.getDistrictCode();
+
+        tracking.setDistrictCode(districtCode);
+
         repository.save(tracking);
+
         return this.convertTrackingToTrackingPrivateResponse(tracking);
     }
 
-    private TrackingPrivateResponse convertTrackingToTrackingPrivateResponse(Tracking tracking) {
-        TrackingPrivateResponse trackingPrivateResponse = mapper.trackingToTrackingPrivateResponse(tracking);
-        convertToTrackingResponseInformation(tracking, trackingPrivateResponse);
+    public void addFirstTracking(Shipment shipment) {
+        String shipmentNumber = shipment.getNumber();
+        Tracking tracking = Tracking.builder()
+                .shipmentNumber(shipmentNumber)
+                .shipmentStatus(ShipmentStatus.SHIPMENT_INFORMATION_RECEIVED)
+                .districtCode(shipment.getSenderDistrictCode())
+                .build();
 
-        Long staffId = tracking.getStaffId();
-        StaffResponse staffResponse = staffService.findStaffResponseById(staffId);
-        trackingPrivateResponse.setStaff(staffResponse);
-        return trackingPrivateResponse;
+        repository.save(tracking);
     }
 
-    private TrackingResponse convertTrackingToTrackingResponse(Tracking tracking) {
-        TrackingResponse trackingResponse = mapper.trackingToTrackingResponse(tracking);
-        convertToTrackingResponseInformation(tracking, trackingResponse);
-        return trackingResponse;
-    }
-
-    private <T extends TrackingResponse> void convertToTrackingResponseInformation(Tracking tracking, T trackingResponse) {
-        Long hubId = tracking.getHubId();
-        HubResponse hubResponse = hubService.findHubResponseById(hubId);
-        trackingResponse.setHub(hubResponse);
-    }
+// ------------- VALIDATE -------------
 
     private boolean validateAddTrackingDto(AddTrackingDto addTrackingDto) {
 //check number
@@ -136,13 +138,31 @@ public class TrackingService {
             throw new InvalidValueException("The new status: " + newShipmentStatus + " is invalid.");
     }
 
-    public void addFirstTracking(String number){
-        shipmentService.validateShipmentNumber(number);
-        Tracking tracking = Tracking.builder()
-                .shipmentNumber(number)
-                .shipmentStatus(ShipmentStatus.SHIPMENT_INFORMATION_RECEIVED)
-                .build();
+// ------------- CONVERT -------------
 
-        repository.save(tracking);
+    private TrackingPrivateResponse convertTrackingToTrackingPrivateResponse(Tracking tracking) {
+        TrackingPrivateResponse trackingPrivateResponse = mapper.trackingToTrackingPrivateResponse(tracking);
+        convertToTrackingResponseInformation(tracking, trackingPrivateResponse);
+
+        Long staffId = tracking.getStaffId();
+        StaffResponse staffResponse = staffId == null ? null : staffService.findStaffResponseById(staffId);
+        trackingPrivateResponse.setStaff(staffResponse);
+        return trackingPrivateResponse;
+    }
+
+    private TrackingResponse convertTrackingToTrackingResponse(Tracking tracking) {
+        TrackingResponse trackingResponse = mapper.trackingToTrackingResponse(tracking);
+        convertToTrackingResponseInformation(tracking, trackingResponse);
+        return trackingResponse;
+    }
+
+    private <T extends TrackingResponse> void convertToTrackingResponseInformation(Tracking tracking, T trackingResponse) {
+        Long hubId = tracking.getHubId();
+        HubResponse hubResponse = hubId == null ? null : hubService.getHubResponseById(hubId);
+
+        DistrictResponse districtResponse = regionService.getDistrictResponseByCode(tracking.getDistrictCode());
+
+        trackingResponse.setHub(hubResponse);
+        trackingResponse.setDistrict(districtResponse);
     }
 }
