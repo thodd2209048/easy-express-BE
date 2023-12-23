@@ -57,7 +57,7 @@ public class HubService {
     }
 
     public HubResponse updateHub(Long id, UpdateHubDto updateHubDto) {
-        Hub currentHub = this.findById(id);
+        Hub currentHub = this.getHubById(id);
         Hub newHub = mapper.copy(currentHub);
         mapper.updateHub(updateHubDto, newHub);
         if (newHub.equals(currentHub))
@@ -77,18 +77,19 @@ public class HubService {
         return repository.existsById(id);
     }
 
-    public Hub findById(Long id) {
+    public Hub getHubById(Long id) {
         Optional<Hub> optionalHub = repository.findById(id);
         if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
         return optionalHub.get();
     }
 
-    public void validate(Long id) {
-        if (!repository.existsById(id))
-            throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
+    public HubResponse getHubResponseById(Long id) {
+        return mapper.hubToHubResponse(this.getHubById(id));
     }
 
-    public HubResponse findHubResponseById(Long id) {
-        return mapper.hubToHubResponse(this.findById(id));
+    // ---------- VALIDATE ----------
+    public void validate(Long id) {
+        if (!repository.existsById(id))
+            throw new ObjectNotFoundException("Hub with id: " + id + " does not exist");
     }
 }

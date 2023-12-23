@@ -77,7 +77,7 @@ public class StaffService {
 
     private StaffResponse convertToStaffResponse(Staff staff) {
         StaffResponse staffResponse = mapper.staffToStaffResponse(staff);
-        Hub hub = hubService.findById(staff.getHubId());
+        Hub hub = hubService.getHubById(staff.getHubId());
         String hubName = hub.getName();
         staffResponse.setHubName(hubName);
         return staffResponse;

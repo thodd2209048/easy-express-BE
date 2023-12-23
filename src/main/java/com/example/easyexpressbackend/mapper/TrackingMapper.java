@@ -15,13 +15,16 @@ public interface TrackingMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "districtCode", ignore = true)
     Tracking addTrackingToTracking (AddTrackingDto addTrackingDto);
 
     @Mapping(target = "hub", ignore = true)
     @Mapping(target = "staff", ignore = true)
+    @Mapping(target = "district", ignore = true)
     TrackingPrivateResponse trackingToTrackingPrivateResponse(Tracking tracking);
 
     @Mapping(target = "hub", ignore = true)
+    @Mapping(target = "district", ignore = true)
     TrackingResponse trackingToTrackingResponse(Tracking tracking);
 
 }

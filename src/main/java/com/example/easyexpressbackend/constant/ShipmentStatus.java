@@ -8,7 +8,8 @@ public enum ShipmentStatus {
     PROCESSED("Processed"),
     DEPARTED("Departed"),
     DELIVERED("Delivered"),
-    RETURNED_TO_SENDER("Return to sender");
+    WAITING_TO_RETURN("Waiting to return"),
+    RETURNED_TO_SENDER("Returned to sender");
 
     private String value;
 

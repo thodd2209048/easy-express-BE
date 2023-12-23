@@ -20,6 +20,8 @@ public class Tracking extends BaseEntity{
     private String shipmentNumber;
     private Long hubId;
     private Long staffId;
+    private String districtCode;
     @Enumerated(EnumType.STRING)
     private ShipmentStatus shipmentStatus;
+    private String newShipmentNumber;
 }

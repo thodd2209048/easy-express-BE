@@ -1,6 +1,7 @@
 package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
+import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,8 @@ public class CustomerShipmentService {
     }
 
     public ShipmentResponse addShipment(AddShipmentDto addShipmentDto) {
-        ShipmentResponse shipmentResponse = shipmentService.addShipment(addShipmentDto);
-        String shipmentNumber = shipmentResponse.getNumber();
-        trackingService.addFirstTracking(shipmentNumber);
-        return shipmentResponse;
+        Shipment shipment = shipmentService.addShipment(addShipmentDto);
+        trackingService.addFirstTracking(shipment);
+        return shipmentService.convertShipmentToShipmentResponse(shipment);
     }
 }

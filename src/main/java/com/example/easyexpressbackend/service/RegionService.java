@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,7 +35,7 @@ public class RegionService {
         this.mapper = mapper;
     }
 
-    @Scheduled(cron = "0 0 0 1 1 ?")
+//    @Scheduled(cron = "0 0 0 1 1 ?")
     public void printAddressJson() throws JsonProcessingException {
         final String url = "https://provinces.open-api.vn/api/?depth=2";
 
@@ -100,18 +99,18 @@ public class RegionService {
     public DistrictResponse convertDistrictToDistrictResponse(District district){
         if(district == null) return null;
         DistrictResponse districtResponse = mapper.districtToDistrictResponse(district);
-        ProvinceResponse provinceResponse = findProvinceResponseByCode(district.getProvinceCode());
+        ProvinceResponse provinceResponse = getProvinceResponseByCode(district.getProvinceCode());
         districtResponse.setProvince(provinceResponse);
         return districtResponse;
     }
 
-    private ProvinceResponse findProvinceResponseByCode(String code){
+    private ProvinceResponse getProvinceResponseByCode(String code){
         if(code == null) return null;
-        Province province = findProvinceByCode(code);
+        Province province = getProvinceByCode(code);
         return mapper.provinceToProvinceResponse(province);
     }
 
-    private Province findProvinceByCode(String code){
+    private Province getProvinceByCode(String code){
         if(code == null) return null;
         Optional<Province> provinceOptional = provinceRepository.findByCode(code);
         if(provinceOptional.isEmpty())throw new ObjectNotFoundException("Province with code: "+ code + " does not exist.");
