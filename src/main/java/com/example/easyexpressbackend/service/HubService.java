@@ -29,17 +29,8 @@ public class HubService {
         this.mapper = mapper;
     }
 
-    public Page<HubResponse> listHub(Pageable pageable) {
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        // Định dạng thời gian
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedTime = currentTime.format(formatter);
-
-        // In ra thời gian hiện tại
-        System.out.println("Thời gian hiện tại: " + formattedTime);
-        System.out.println("list hub");
-        return repository.findAll(pageable).map(mapper::hubToHubResponse);
+    public Page<HubResponse> listHub(Pageable pageable, String searchTerm) {
+        return repository.findAllAndSearch(pageable, searchTerm).map(mapper::hubToHubResponse);
     }
 
     public HubResponse addHub(AddHubDto addHubDto) {

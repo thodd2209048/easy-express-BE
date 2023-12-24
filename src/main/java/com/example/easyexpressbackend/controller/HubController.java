@@ -26,14 +26,18 @@ public class HubController {
     @GetMapping({"/",""})
     public Page<HubResponse> listHub(@PageableDefault(sort = {"id"})  Pageable pageable,
                                      @RequestParam(required = false, value = "sort-field", defaultValue = "id") String sortField,
-                                     @RequestParam(required = false) String direction
+                                     @RequestParam(required = false) String direction,
+                                     @RequestParam(required = false, value = "search" , defaultValue = "") String searchTerm
                                      ){
         Sort.Direction sortDirection = Sort.Direction.fromOptionalString(direction).orElse(Sort.Direction.ASC);
-        Sort sort = Sort.by(sortDirection, sortField);
+
+        Sort sort = "name".equals(sortField) ?
+                Sort.by(sortDirection,"name") : Sort.by(sortDirection,"id");
 
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        return service.listHub(pageable);
+        System.out.println(service.listHub(pageable, searchTerm));
+        return service.listHub(pageable, searchTerm);
     }
 
     @PostMapping({"/",""})
