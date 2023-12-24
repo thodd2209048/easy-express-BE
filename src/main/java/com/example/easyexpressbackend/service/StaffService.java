@@ -31,8 +31,8 @@ public class StaffService {
         this.mapper = mapper;
     }
 
-    public Page<StaffResponse> listStaffs(Pageable pageable, Long hubId) {
-        return repository.listStaffs(pageable, hubId)
+    public Page<StaffResponse> listStaffs(Pageable pageable, Long hubId, String searchTerm) {
+        return repository.listStaffsByHubIdAndSearch(pageable, hubId, searchTerm)
                 .map(this::convertToStaffResponse);
     }
 

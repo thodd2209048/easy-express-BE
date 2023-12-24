@@ -27,18 +27,19 @@ public class StaffController {
     public Page<StaffResponse> listStaffs(
             @PageableDefault(sort = {"id"}) Pageable pageable,
             @RequestParam(required = false) Long hubId,
-            @RequestParam(value = "sort-field", required = false) String sortField,
-            @RequestParam(required = false, defaultValue = "asc") String direction) {
+            @RequestParam(required = false, value = "sort-field") String sortField,
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, value = "search" , defaultValue = "") String searchTerm) {
 
-        Sort.Direction sortDirection = direction.equals("desc") ?
+        Sort.Direction sortDirection = "desc".equals(direction) ?
                 Sort.Direction.DESC : Sort.Direction.ASC;
 
-        Sort sort = sortField.equals("name") ?
+        Sort sort = "name".equals(sortField) ?
                 Sort.by(sortDirection,"name") : Sort.by(sortDirection,"id");
 
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        return service.listStaffs(pageable, hubId);
+        return service.listStaffs(pageable, hubId, searchTerm);
     }
 
     @PostMapping({"/", ""})
