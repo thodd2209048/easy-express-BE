@@ -7,7 +7,10 @@ import com.example.easyexpressbackend.service.HubService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,8 +24,20 @@ public class HubController {
     }
 
     @GetMapping({"/",""})
-    public Page<HubResponse> listHub(Pageable pageable){
-        return service.listHub(pageable);
+    public Page<HubResponse> listHub(@PageableDefault(sort = {"id"})  Pageable pageable,
+                                     @RequestParam(required = false, value = "sort-field", defaultValue = "id") String sortField,
+                                     @RequestParam(required = false) String direction,
+                                     @RequestParam(required = false, value = "search" , defaultValue = "") String searchTerm
+                                     ){
+        Sort.Direction sortDirection = Sort.Direction.fromOptionalString(direction).orElse(Sort.Direction.ASC);
+
+        Sort sort = "name".equals(sortField) ?
+                Sort.by(sortDirection,"name") : Sort.by(sortDirection,"id");
+
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        System.out.println(service.listHub(pageable, searchTerm));
+        return service.listHub(pageable, searchTerm);
     }
 
     @PostMapping({"/",""})
