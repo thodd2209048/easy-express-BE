@@ -40,7 +40,6 @@ public class RegionService {
     }
 
     //    @Scheduled(cron = "0 0 0 1 1 ?")
-    @Transactional
     public void addRegions() throws JsonProcessingException {
         final String url = "https://provinces.open-api.vn/api/?depth=2";
 
@@ -57,10 +56,9 @@ public class RegionService {
                 this.addDistrictToList(districtNode, districts);
             }
         }
-        System.out.println(provinces.size());
-        System.out.println(districts.size());
-//        provinceRepository.saveAll(provinces);
-//        districtRepository.saveAll(districts);
+
+        provinceRepository.saveAll(provinces);
+        districtRepository.saveAll(districts);
     }
 
     private void addProvinceToList(JsonNode provinceNode, Set<Province> provinces) {
