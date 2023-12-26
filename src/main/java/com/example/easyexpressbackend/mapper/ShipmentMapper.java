@@ -16,6 +16,7 @@ public interface ShipmentMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "number", ignore = true)
+    @Mapping(target = "lastTrackingId", ignore = true)
     @Mapping(target = "newNumber", ignore = true)
     Shipment addShipmentToShipment(AddShipmentDto addShipmentDto);
 
