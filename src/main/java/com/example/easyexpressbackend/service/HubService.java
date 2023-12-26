@@ -8,29 +8,31 @@ import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.HubMapper;
 import com.example.easyexpressbackend.repository.HubRepository;
 import com.example.easyexpressbackend.response.HubResponse;
+import com.example.easyexpressbackend.response.region.DistrictResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
 public class HubService {
     private final HubRepository repository;
     private final HubMapper mapper;
+    private final RegionService regionService;
 
     @Autowired
     public HubService(HubRepository repository,
-                      HubMapper mapper) {
+                      HubMapper mapper,
+                      RegionService regionService) {
         this.repository = repository;
         this.mapper = mapper;
+        this.regionService = regionService;
     }
 
     public Page<HubResponse> listHub(Pageable pageable, String searchTerm) {
-        return repository.findAllAndSearch(pageable, searchTerm).map(mapper::hubToHubResponse);
+        return repository.findAllAndSearch(pageable, searchTerm).map(this::convertHubToHubResponse);
     }
 
     public HubResponse addHub(AddHubDto addHubDto) {
@@ -44,7 +46,7 @@ public class HubService {
             throw new DuplicateObjectException("Hub with location: " + newLocation + " does exist");
         Hub newHub = mapper.addHubToHub(addHubDto);
         repository.save(newHub);
-        return mapper.hubToHubResponse(newHub);
+        return this.convertHubToHubResponse(newHub);
     }
 
     public HubResponse updateHub(Long id, UpdateHubDto updateHubDto) {
@@ -55,7 +57,7 @@ public class HubService {
             throw new DuplicateObjectException("The updated object is the same as the existing one.");
 
         repository.save(newHub);
-        return mapper.hubToHubResponse(newHub);
+        return this.convertHubToHubResponse(newHub);
     }
 
     public void deleteHub(Long id) {
@@ -75,7 +77,19 @@ public class HubService {
     }
 
     public HubResponse getHubResponseById(Long id) {
-        return mapper.hubToHubResponse(this.getHubById(id));
+        Hub hub = this.getHubById(id);
+        return this.convertHubToHubResponse(hub);
+    }
+
+    public HubResponse convertHubToHubResponse(Hub hub) {
+        HubResponse hubResponse = mapper.hubToHubResponse(hub);
+
+        String districtCode = hub.getDistrictCode();
+        DistrictResponse districtResponse = regionService.getDistrictResponseByCode(districtCode);
+
+        hubResponse.setDistrict(districtResponse);
+
+        return hubResponse;
     }
 
     // ---------- VALIDATE ----------
