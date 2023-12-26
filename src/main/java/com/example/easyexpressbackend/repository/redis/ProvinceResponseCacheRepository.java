@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProvinceCacheRepository extends CrudRepository<ProvinceResponse, Long> {
+public interface ProvinceResponseCacheRepository extends CrudRepository<ProvinceResponse, Long> {
 
 
 }

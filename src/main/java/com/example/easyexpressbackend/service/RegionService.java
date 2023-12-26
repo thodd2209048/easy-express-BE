@@ -1,11 +1,15 @@
 package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.entity.region.District;
+import com.example.easyexpressbackend.entity.region.DistrictsCache;
 import com.example.easyexpressbackend.entity.region.Province;
+import com.example.easyexpressbackend.entity.region.ProvincesCache;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.RegionMapper;
-import com.example.easyexpressbackend.repository.redis.DistrictCacheRepository;
-import com.example.easyexpressbackend.repository.redis.ProvinceCacheRepository;
+import com.example.easyexpressbackend.repository.redis.DistrictResponseCacheRepository;
+import com.example.easyexpressbackend.repository.redis.DistrictsCacheRepository;
+import com.example.easyexpressbackend.repository.redis.ProvinceResponseCacheRepository;
+import com.example.easyexpressbackend.repository.redis.ProvincesCacheRepository;
 import com.example.easyexpressbackend.repository.region.DistrictRepository;
 import com.example.easyexpressbackend.repository.region.ProvinceRepository;
 import com.example.easyexpressbackend.response.region.DistrictResponse;
@@ -17,31 +21,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RegionService {
     private final RestTemplate restTemplate;
     private final ProvinceRepository provinceRepository;
-    private final ProvinceCacheRepository provinceCacheRepository;
+    private final ProvinceResponseCacheRepository provinceResponseCacheRepository;
     private final DistrictRepository districtRepository;
-    private final DistrictCacheRepository districtCacheRepository;
+    private final DistrictResponseCacheRepository districtResponseCacheRepository;
     private final RegionMapper mapper;
+
+    private final ProvincesCacheRepository provincesCacheRepository;
+    private final DistrictsCacheRepository districtsCacheRepository;
 
 
     @Autowired
     public RegionService(ProvinceRepository provinceRepository,
                          DistrictRepository districtRepository,
                          RestTemplate restTemplate,
-                         ProvinceCacheRepository provinceCacheRepository,
-                         DistrictCacheRepository districtCacheRepository,
-                         RegionMapper mapper) {
+                         ProvinceResponseCacheRepository provinceResponseCacheRepository,
+                         DistrictResponseCacheRepository districtResponseCacheRepository,
+                         RegionMapper mapper,
+                         ProvincesCacheRepository provincesCacheRepository,
+                         DistrictsCacheRepository districtsCacheRepository) {
         this.provinceRepository = provinceRepository;
         this.districtRepository = districtRepository;
         this.restTemplate = restTemplate;
-        this.provinceCacheRepository = provinceCacheRepository;
-        this.districtCacheRepository = districtCacheRepository;
+        this.provinceResponseCacheRepository = provinceResponseCacheRepository;
+        this.districtResponseCacheRepository = districtResponseCacheRepository;
         this.mapper = mapper;
+        this.provincesCacheRepository = provincesCacheRepository;
+        this.districtsCacheRepository = districtsCacheRepository;
     }
 
     //    @Scheduled(cron = "0 0 0 1 1 ?")
@@ -92,29 +105,49 @@ public class RegionService {
         districts.add(district);
     }
 
-
     public List<ProvinceResponse> listProvince() {
-        List<ProvinceResponse> provinceRedis = new ArrayList<>();
-        provinceCacheRepository.findAll().forEach(provinceRedis::add);
-        if (!provinceRedis.isEmpty()) return provinceRedis;
+        Optional<ProvincesCache> provincesCacheOptional = provincesCacheRepository.findById(1L);
+
+        if (provincesCacheOptional.isPresent()
+                && !provincesCacheOptional.get().getProvinces().isEmpty()) {
+            return provincesCacheOptional.get().getProvinces();
+        }
 
         List<Province> provinces = provinceRepository.findAll();
+        List<ProvinceResponse> provinceResponses = provinces.stream()
+                .map(mapper::provinceToProvinceResponse)
+                .toList();
 
-        provinceRedis = provinces.stream().map(mapper::provinceToProvinceResponse).toList();
-        provinceCacheRepository.saveAll(provinceRedis);
+        ProvincesCache provincesCache = ProvincesCache.builder()
+                .id(1L)
+                .provinces(provinceResponses)
+                .build();
 
-        return provinceRedis;
+
+        provincesCacheRepository.save(provincesCache);
+
+        return provinceResponses;
     }
 
-    public List<DistrictResponse> listDistricts(){
-        List<DistrictResponse> districtResponses = new ArrayList<>();
-        districtCacheRepository.findAll().forEach(districtResponses::add);
-        System.out.println(districtResponses);
-        if(!districtResponses.isEmpty()) return districtResponses;
+    public List<DistrictResponse> listDistricts() {
+        Optional<DistrictsCache> districtsCacheOptional = districtsCacheRepository.findById(1L);
+        if (districtsCacheOptional.isPresent()
+                && districtsCacheOptional.get().getDistricts() != null
+                && !districtsCacheOptional.get().getDistricts().isEmpty()) {
+            return districtsCacheOptional.get().getDistricts();
+        }
 
         List<District> districts = districtRepository.findAll();
-        districtResponses = districts.stream().map(this::convertDistrictToDistrictResponse).toList();
-        districtCacheRepository.saveAll(districtResponses);
+        List<DistrictResponse> districtResponses = districts.stream()
+                .map(this::convertDistrictToDistrictResponse)
+                .toList();
+
+        DistrictsCache districtsCache = DistrictsCache.builder()
+                .id(1L)
+                .districts(districtResponses)
+                .build();
+
+        districtsCacheRepository.save(districtsCache);
 
         return districtResponses;
     }
