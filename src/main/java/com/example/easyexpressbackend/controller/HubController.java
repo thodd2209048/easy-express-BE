@@ -25,9 +25,9 @@ public class HubController {
 
     @GetMapping({"/",""})
     public Page<HubResponse> listHub(@PageableDefault(sort = {"id"})  Pageable pageable,
-                                     @RequestParam(required = false, value = "sort-field", defaultValue = "id") String sortField,
+                                     @RequestParam(required = false, defaultValue = "id") String sortField,
                                      @RequestParam(required = false) String direction,
-                                     @RequestParam(required = false, value = "search" , defaultValue = "") String searchTerm
+                                     @RequestParam(required = false, defaultValue = "") String searchTerm
                                      ){
         Sort.Direction sortDirection = Sort.Direction.fromOptionalString(direction).orElse(Sort.Direction.ASC);
 
@@ -36,7 +36,7 @@ public class HubController {
 
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        System.out.println(service.listHub(pageable, searchTerm));
+        System.out.println(sort);
         return service.listHub(pageable, searchTerm);
     }
 

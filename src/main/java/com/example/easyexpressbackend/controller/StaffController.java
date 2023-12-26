@@ -38,7 +38,6 @@ public class StaffController {
                 Sort.by(sortDirection,"name") : Sort.by(sortDirection,"id");
 
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-
         return service.listStaffs(pageable, hubId, searchTerm);
     }
 

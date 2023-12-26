@@ -28,4 +28,6 @@ public class ShipmentResponse {
     private Double lengthInCm;
     private Double widthInCm;
     private Double heightInCm;
+// FURTHER
+    private String newNumber;
 }

@@ -76,7 +76,7 @@ public class TrackingService {
         return this.convertTrackingToTrackingPrivateResponse(tracking);
     }
 
-    public void addFirstTracking(Shipment shipment) {
+    public Tracking addFirstTracking(Shipment shipment) {
         String shipmentNumber = shipment.getNumber();
         Tracking tracking = Tracking.builder()
                 .shipmentNumber(shipmentNumber)
@@ -84,7 +84,7 @@ public class TrackingService {
                 .districtCode(shipment.getSenderDistrictCode())
                 .build();
 
-        repository.save(tracking);
+        return repository.save(tracking);
     }
 
 // ------------- VALIDATE -------------

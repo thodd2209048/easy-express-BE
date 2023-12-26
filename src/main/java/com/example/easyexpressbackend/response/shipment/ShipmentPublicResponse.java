@@ -13,4 +13,5 @@ public class ShipmentPublicResponse {
     private DistrictResponse senderDistrict;
     private DistrictResponse receiverDistrict;
     private String description;
+    private String newNumber;
 }

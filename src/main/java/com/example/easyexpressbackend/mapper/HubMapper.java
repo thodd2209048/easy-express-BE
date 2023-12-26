@@ -18,6 +18,7 @@ public interface HubMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Hub addHubToHub(AddHubDto addHubDto);
 
+    @Mapping(target = "district", ignore = true)
     HubResponse hubToHubResponse(Hub hub);
 
     Hub copy(Hub hub);

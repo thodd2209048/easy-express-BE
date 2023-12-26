@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.response;
 
+import com.example.easyexpressbackend.response.region.DistrictResponse;
 import lombok.*;
 
 @Data
@@ -11,5 +12,5 @@ public class HubResponse {
     private Long id;
     private String name;
     private String location;
-    private String districtCode;
+    private DistrictResponse district;
 }

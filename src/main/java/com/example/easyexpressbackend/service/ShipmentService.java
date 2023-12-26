@@ -41,21 +41,6 @@ public class ShipmentService {
         return this.convertShipmentToShipmentResponse(shipment);
     }
 
-//    public ShipmentResponse addShipmentAndReturn(AddShipmentDto addShipmentDto) {
-//        Shipment shipment = this.addShipment(addShipmentDto);
-//
-//        return this.convertShipmentToShipmentResponse(shipment);
-//    }
-
-    public Shipment addShipment(AddShipmentDto addShipmentDto) {
-        Shipment shipment = mapper.addShipmentToShipment(addShipmentDto);
-
-        String number = RandomStringUtils.randomNumeric(10);
-        shipment.setNumber(number);
-
-        return repository.save(shipment);
-    }
-
     public void validateShipmentNumber(String number) {
         if (!repository.existsByNumber(number))
             throw new ObjectNotFoundException("Shipment with number: " + number + " does exist.");
@@ -93,5 +78,14 @@ public class ShipmentService {
         shipmentResponse.setReceiverDistrict(receiverDistrict);
 
         return shipmentResponse;
+    }
+
+    public Shipment convertAddShipmentToShipment(AddShipmentDto addShipmentDto){
+        return mapper.addShipmentToShipment(addShipmentDto);
+    }
+
+    public ShipmentResponse saveShipmentAndReturnResponse(Shipment shipment){
+        repository.save(shipment);
+        return mapper.shipmentToShipmentResponse(shipment);
     }
 }

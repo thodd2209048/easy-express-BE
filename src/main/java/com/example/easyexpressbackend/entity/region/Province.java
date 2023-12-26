@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class Province extends BaseEntity {
+public class Province extends BaseEntitySequence {
     private String name;
     private String code;
     private String codename;
