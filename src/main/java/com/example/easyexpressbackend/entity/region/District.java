@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class District extends BaseEntity {
+public class District extends BaseEntitySequence {
     private String name;
     private String code;
     private String codename;
