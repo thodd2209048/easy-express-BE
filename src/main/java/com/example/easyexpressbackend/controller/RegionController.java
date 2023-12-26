@@ -25,8 +25,8 @@ public class RegionController {
     }
 
     @GetMapping("/districts")
-    public List<DistrictResponse> listDistrictInProvince(@RequestParam(required = false)  String provinceCode){
-        return service.listDistrictByProvinceCode(provinceCode);
+    public List<DistrictResponse> listDistricts(){
+        return service.listDistricts();
     }
 
     @PostMapping({"/",""})
