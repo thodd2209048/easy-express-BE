@@ -13,5 +13,6 @@ public class ShipmentPublicResponse {
     private DistrictResponse senderDistrict;
     private DistrictResponse receiverDistrict;
     private String description;
+    private Long lastTrackingId;
     private String newNumber;
 }

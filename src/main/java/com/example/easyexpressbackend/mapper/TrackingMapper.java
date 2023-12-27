@@ -2,8 +2,8 @@ package com.example.easyexpressbackend.mapper;
 
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
 import com.example.easyexpressbackend.entity.Tracking;
-import com.example.easyexpressbackend.response.tracking.TrackingResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingPublicResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -26,6 +26,6 @@ public interface TrackingMapper {
 
     @Mapping(target = "hub", ignore = true)
     @Mapping(target = "district", ignore = true)
-    TrackingResponse trackingToTrackingResponse(Tracking tracking);
+    TrackingPublicResponse trackingToTrackingResponse(Tracking tracking);
 
 }

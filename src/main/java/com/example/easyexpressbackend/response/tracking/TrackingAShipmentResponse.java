@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class TrackingAShipmentResponse {
     private ShipmentPublicResponse shipment;
-    private List<TrackingResponse> trackingList;
+    private List<TrackingPublicResponse> trackingList;
 }

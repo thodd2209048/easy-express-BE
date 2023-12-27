@@ -10,11 +10,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
 public class RedisConfig {
-    @Value("REDIS_HOST")
+    @Value("${REDIS_HOST}")
     private String redisHost;
-    @Value("REDIS_PORT")
+    @Value("${REDIS_PORT}")
     private int redisPort;
-    @Value("REDIS_PASSWORD")
+    @Value("${REDIS_PASSWORD}")
     private String redisPassword;
 
     @Bean

@@ -2,8 +2,7 @@ package com.example.easyexpressbackend.controller.shipment;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
 import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
-import com.example.easyexpressbackend.service.CustomerShipmentService;
-import com.example.easyexpressbackend.service.ShipmentService;
+import com.example.easyexpressbackend.service.shipment.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,16 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/customer/shipments")
 public class CustomerShipmentController {
-    private final CustomerShipmentService service;
+
+    private final ShipmentService shipmentService;
 
     @Autowired
-    public CustomerShipmentController(CustomerShipmentService service) {
-        this.service = service;
+    public CustomerShipmentController(ShipmentService shipmentService) {
+        this.shipmentService = shipmentService;
     }
 
     //    Create new shipment
     @PostMapping({"", "/"})
     public ShipmentResponse addShipment(@RequestBody @Valid AddShipmentDto addShipmentDto) {
-        return service.addShipment(addShipmentDto);
+        return shipmentService.addShipment(addShipmentDto);
     }
 }
