@@ -22,6 +22,7 @@ public interface ShipmentMapper {
 
     @Mapping(target = "senderDistrict", ignore = true)
     @Mapping(target = "receiverDistrict", ignore = true)
+    @Mapping(target = "lastTracking", ignore = true)
     ShipmentResponse shipmentToShipmentResponse(Shipment shipment);
 
     @Mapping(target = "senderDistrict", ignore = true)

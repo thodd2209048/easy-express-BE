@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TrackingPrivateResponse extends TrackingResponse {
+public class TrackingPrivateResponse extends TrackingPublicResponse {
     private StaffResponse staff;
 }

@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrackingResponse {
+public class TrackingPublicResponse {
     private Long id;
     private ZonedDateTime createdAt;
     private String shipmentNumber;
