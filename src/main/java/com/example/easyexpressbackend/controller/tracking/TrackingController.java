@@ -2,7 +2,7 @@ package com.example.easyexpressbackend.controller.tracking;
 
 import com.example.easyexpressbackend.dto.tracking.AddTrackingDto;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
-import com.example.easyexpressbackend.service.shipment.ShipmentService;
+import com.example.easyexpressbackend.service.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +23,7 @@ public class TrackingController {
 
     @PostMapping({"/",""})
     public TrackingPrivateResponse addTracking(@RequestBody @Valid AddTrackingDto addTrackingDto){
+
         return shipmentService.addTracking(addTrackingDto);
     }
 }

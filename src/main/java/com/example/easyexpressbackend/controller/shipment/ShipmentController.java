@@ -2,7 +2,7 @@ package com.example.easyexpressbackend.controller.shipment;
 
 import com.example.easyexpressbackend.constant.ShipmentStatus;
 import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
-import com.example.easyexpressbackend.service.shipment.ShipmentService;
+import com.example.easyexpressbackend.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
