@@ -6,9 +6,7 @@ import com.example.easyexpressbackend.entity.region.Province;
 import com.example.easyexpressbackend.entity.region.ProvincesCache;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.RegionMapper;
-import com.example.easyexpressbackend.repository.redis.DistrictResponseCacheRepository;
 import com.example.easyexpressbackend.repository.redis.DistrictsCacheRepository;
-import com.example.easyexpressbackend.repository.redis.ProvinceResponseCacheRepository;
 import com.example.easyexpressbackend.repository.redis.ProvincesCacheRepository;
 import com.example.easyexpressbackend.repository.region.DistrictRepository;
 import com.example.easyexpressbackend.repository.region.ProvinceRepository;
@@ -29,9 +27,7 @@ import java.util.Optional;
 public class RegionService {
     private final RestTemplate restTemplate;
     private final ProvinceRepository provinceRepository;
-    private final ProvinceResponseCacheRepository provinceResponseCacheRepository;
     private final DistrictRepository districtRepository;
-    private final DistrictResponseCacheRepository districtResponseCacheRepository;
     private final RegionMapper mapper;
 
     private final ProvincesCacheRepository provincesCacheRepository;
@@ -42,16 +38,12 @@ public class RegionService {
     public RegionService(ProvinceRepository provinceRepository,
                          DistrictRepository districtRepository,
                          RestTemplate restTemplate,
-                         ProvinceResponseCacheRepository provinceResponseCacheRepository,
-                         DistrictResponseCacheRepository districtResponseCacheRepository,
                          RegionMapper mapper,
                          ProvincesCacheRepository provincesCacheRepository,
                          DistrictsCacheRepository districtsCacheRepository) {
         this.provinceRepository = provinceRepository;
         this.districtRepository = districtRepository;
         this.restTemplate = restTemplate;
-        this.provinceResponseCacheRepository = provinceResponseCacheRepository;
-        this.districtResponseCacheRepository = districtResponseCacheRepository;
         this.mapper = mapper;
         this.provincesCacheRepository = provincesCacheRepository;
         this.districtsCacheRepository = districtsCacheRepository;

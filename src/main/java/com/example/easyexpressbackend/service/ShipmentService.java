@@ -1,4 +1,4 @@
-package com.example.easyexpressbackend.service.shipment;
+package com.example.easyexpressbackend.service;
 
 import com.example.easyexpressbackend.constant.ShipmentStatus;
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
@@ -11,6 +11,7 @@ import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.ShipmentMapper;
 import com.example.easyexpressbackend.mapper.TrackingMapper;
+import com.example.easyexpressbackend.modal.EmailMessage;
 import com.example.easyexpressbackend.repository.ShipmentRepository;
 import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
@@ -21,10 +22,9 @@ import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPublicResponse;
-import com.example.easyexpressbackend.service.HubService;
-import com.example.easyexpressbackend.service.RegionService;
-import com.example.easyexpressbackend.service.StaffService;
+import com.example.easyexpressbackend.service.rabbitMq.EmailMessageProducer;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +43,9 @@ public class ShipmentService {
     private final StaffService staffService;
     private final HubService hubService;
 
+    private final AmqpTemplate amqpTemplate;
+    private final EmailMessageProducer emailMessageProducer;
+
 
     @Autowired
     public ShipmentService(ShipmentRepository shipmentRepository,
@@ -51,7 +54,9 @@ public class ShipmentService {
                            TrackingMapper trackingMapper,
                            RegionService regionService,
                            StaffService staffService,
-                           HubService hubService) {
+                           HubService hubService,
+                           AmqpTemplate amqpTemplate,
+                           EmailMessageProducer emailMessageProducer) {
         this.shipmentRepository = shipmentRepository;
         this.trackingRepository = trackingRepository;
         this.shipmentMapper = shipmentMapper;
@@ -59,6 +64,8 @@ public class ShipmentService {
         this.regionService = regionService;
         this.staffService = staffService;
         this.hubService = hubService;
+        this.amqpTemplate = amqpTemplate;
+        this.emailMessageProducer = emailMessageProducer;
     }
 
     //    ---------- CRUD SHIPMENT ----------
@@ -66,9 +73,9 @@ public class ShipmentService {
                                                 Long hubId,
                                                 ShipmentStatus status,
                                                 ZonedDateTime startDateTime) {
-        ZonedDateTime endDateTime = startDateTime == null? null : startDateTime.plusHours(24);
+        ZonedDateTime endDateTime = startDateTime == null ? null : startDateTime.plusHours(24);
         return shipmentRepository.findShipmentsFilterByHubIdAndStatusAndDateTime(
-                pageable, hubId, status, startDateTime, endDateTime)
+                        pageable, hubId, status, startDateTime, endDateTime)
                 .map(this::convertShipmentToShipmentResponse);
     }
 
@@ -87,12 +94,12 @@ public class ShipmentService {
     public ShipmentResponse addShipment(AddShipmentDto addShipmentDto) {
         Shipment shipment = this.convertAddShipmentToShipment(addShipmentDto);
 
-        String number = RandomStringUtils.randomNumeric(10);
+        String number = "9" + RandomStringUtils.randomNumeric(9);
         shipment.setNumber(number);
         shipmentRepository.save(shipment);
 
         Tracking tracking = Tracking.builder()
-                .shipmentNumber(shipment.getNumber())
+                .shipmentNumber(number)
                 .shipmentStatus(ShipmentStatus.SHIPMENT_INFORMATION_RECEIVED)
                 .districtCode(shipment.getSenderDistrictCode())
                 .build();
@@ -122,8 +129,10 @@ public class ShipmentService {
     }
 
     public TrackingPrivateResponse addTracking(AddTrackingDto addTrackingDto) {
+        long start = System.currentTimeMillis();
         this.validateAddTrackingDto(addTrackingDto);
-
+        long validateTime = System.currentTimeMillis();
+        System.out.println("---------------------------------Time to validate: " + (validateTime - start) + "---------------------------------");
         Tracking tracking = trackingMapper.addTrackingToTracking(addTrackingDto);
 
         Hub hub = hubService.getHubById(addTrackingDto.getHubId());
@@ -138,6 +147,15 @@ public class ShipmentService {
         shipment.setLastTrackingId(tracking.getId());
         shipmentRepository.save(shipment);
 
+        if (tracking.getShipmentStatus() == ShipmentStatus.DELIVERED) {
+            EmailMessage emailMessage = new EmailMessage(
+                    "thoddth2209048@fpt.edu.vn",
+                    "BoL: " + shipmentNumber + " has been delivered to the recipient",
+                    "The shipment with the BoL number " + shipmentNumber + " has been delivered to the recipient.");
+            emailMessageProducer.convertAndSendDeliveredEmail(emailMessage);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("---------------------------------Time to add tracking: " + (end - start) + "---------------------------------");
         return this.convertTrackingToTrackingPrivateResponse(tracking);
     }
 
@@ -251,7 +269,7 @@ public class ShipmentService {
 
         Long trackingId = shipment.getLastTrackingId();
         Tracking tracking = trackingRepository.findById(trackingId)
-                .orElseThrow(()-> new ObjectNotFoundException(
+                .orElseThrow(() -> new ObjectNotFoundException(
                         "Last tracking with Id: " + trackingId + " does not exist."
                 ));
         TrackingPrivateResponse trackingPrivateResponse = this.convertTrackingToTrackingPrivateResponse(tracking);

@@ -25,7 +25,6 @@ public class RedisConfig {
     }
 
     @Bean
-
      JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
         jedisConnectionFactory.setHostName(redisHost);
