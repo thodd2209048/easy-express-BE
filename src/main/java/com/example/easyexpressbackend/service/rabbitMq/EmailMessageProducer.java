@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.service.rabbitMq;
 
-import com.example.easyexpressbackend.modal.EmailMessage;
+import com.example.easyexpressbackend.modal.DeliveredEmailTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class EmailMessageProducer {
-    private final ObjectMapper objectMapper;
+//    private final ObjectMapper objectMapper;
     private final AmqpTemplate amqpTemplate;
 
     @Value("${exchange.email.name}")
@@ -20,23 +20,15 @@ public class EmailMessageProducer {
     private String deliveredEmailRouteKey;
 
     @Autowired
-    public EmailMessageProducer(ObjectMapper objectMapper,
+    public EmailMessageProducer(
+//            ObjectMapper objectMapper,
                                 AmqpTemplate amqpTemplate) {
-        this.objectMapper = objectMapper;
+//        this.objectMapper = objectMapper;
         this.amqpTemplate = amqpTemplate;
     }
 
-    public String serializeEmailMessage(EmailMessage emailMessage) throws JsonProcessingException {
-            return objectMapper.writeValueAsString(emailMessage);
-    }
-
-    public void convertAndSendDeliveredEmail(EmailMessage emailMessage) {
-        String serializedEmailMessage = null;
-        try {
-            serializedEmailMessage = this.serializeEmailMessage(emailMessage);
-            amqpTemplate.convertAndSend(emailExchangeName, deliveredEmailRouteKey, serializedEmailMessage);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public void convertAndSendDeliveredEmail(String toEmail, String shipmentNumber) {
+        String message = toEmail + "," + shipmentNumber;
+        amqpTemplate.convertAndSend(emailExchangeName, deliveredEmailRouteKey, message);
     }
 }

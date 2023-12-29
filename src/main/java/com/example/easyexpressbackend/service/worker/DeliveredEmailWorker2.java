@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.service.worker;
 
-import com.example.easyexpressbackend.modal.EmailMessage;
+import com.example.easyexpressbackend.modal.DeliveredEmailTemplate;
 import com.example.easyexpressbackend.service.EmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
@@ -23,14 +23,14 @@ public class DeliveredEmailWorker2 implements MessageListener {
     }
 
     public void onMessage(Message message){
-        EmailMessage emailMessage = null;
+        DeliveredEmailTemplate deliveredEmailTemplate = null;
         try {
-            emailMessage = objectMapper.readValue(message.getBody(), EmailMessage.class);
+            deliveredEmailTemplate = objectMapper.readValue(message.getBody(), DeliveredEmailTemplate.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (emailMessage != null) {
-            emailService.sendEmail(emailMessage.getToEmail(), emailMessage.getSubject(), emailMessage.getBody());
+        if (deliveredEmailTemplate != null) {
+            emailService.sendEmail(deliveredEmailTemplate.getToEmail(), deliveredEmailTemplate.getSubject(), deliveredEmailTemplate.getBody());
         };
     }
 }

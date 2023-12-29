@@ -11,7 +11,6 @@ import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.ShipmentMapper;
 import com.example.easyexpressbackend.mapper.TrackingMapper;
-import com.example.easyexpressbackend.modal.EmailMessage;
 import com.example.easyexpressbackend.repository.ShipmentRepository;
 import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
@@ -26,6 +25,7 @@ import com.example.easyexpressbackend.service.rabbitMq.EmailMessageProducer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,9 +42,11 @@ public class ShipmentService {
     private final RegionService regionService;
     private final StaffService staffService;
     private final HubService hubService;
-
     private final AmqpTemplate amqpTemplate;
     private final EmailMessageProducer emailMessageProducer;
+
+    @Value("${defaultEmail}")
+    private String toEmail;
 
 
     @Autowired
@@ -112,7 +114,7 @@ public class ShipmentService {
         return this.convertShipmentToShipmentResponse(shipment);
     }
 
-
+    //    ---------- CRUD TRACKING ----------
     public TrackingAShipmentResponse trackingAShipment(String shipmentNumber) {
         Shipment shipment = this.getShipment(shipmentNumber);
         ShipmentPublicResponse shipmentPublicResponse = this.convertShipmentToShipmentPublicResponse(shipment);
@@ -126,6 +128,11 @@ public class ShipmentService {
         trackingAShipmentResponse.setShipment(shipmentPublicResponse);
         trackingAShipmentResponse.setTrackingList(trackingPublicResponseList);
         return trackingAShipmentResponse;
+    }
+
+    public Tracking getTracking(Long trackingId){
+        return trackingRepository.findById(trackingId)
+                .orElseThrow(()-> new ObjectNotFoundException("Tracking with id: " + trackingId + " does not exist."));
     }
 
     public TrackingPrivateResponse addTracking(AddTrackingDto addTrackingDto) {
@@ -148,11 +155,8 @@ public class ShipmentService {
         shipmentRepository.save(shipment);
 
         if (tracking.getShipmentStatus() == ShipmentStatus.DELIVERED) {
-            EmailMessage emailMessage = new EmailMessage(
-                    "thoddth2209048@fpt.edu.vn",
-                    "BoL: " + shipmentNumber + " has been delivered to the recipient",
-                    "The shipment with the BoL number " + shipmentNumber + " has been delivered to the recipient.");
-            emailMessageProducer.convertAndSendDeliveredEmail(emailMessage);
+            String toEmail = ""
+            emailMessageProducer.convertAndSendDeliveredEmail(toEmail, shipmentNumber);
         }
         long end = System.currentTimeMillis();
         System.out.println("---------------------------------Time to add tracking: " + (end - start) + "---------------------------------");
