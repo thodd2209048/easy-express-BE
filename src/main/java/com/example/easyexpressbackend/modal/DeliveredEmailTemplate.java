@@ -1,6 +1,8 @@
 package com.example.easyexpressbackend.modal;
 
 import lombok.*;
+import org.springframework.data.annotation.Transient;
+import org.thymeleaf.context.Context;
 
 @Data
 @AllArgsConstructor

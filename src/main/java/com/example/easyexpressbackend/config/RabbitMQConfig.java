@@ -33,16 +33,16 @@ public class RabbitMQConfig {
         return simpleMessageListenerDeliveredEmailContainer;
     }
 
-    @Bean
-    MessageListenerContainer messageListenerDeliveredEmailContainer2(
-            ConnectionFactory connectionFactory,
-            DeliveredEmailWorker2 deliveredEmailWorker2
-    ) {
-        SimpleMessageListenerContainer simpleMessageListenerDeliveredEmailContainer = new SimpleMessageListenerContainer();
-        simpleMessageListenerDeliveredEmailContainer.setConnectionFactory(connectionFactory);
-        simpleMessageListenerDeliveredEmailContainer.setQueues(deliveredEmailQueue());
-        simpleMessageListenerDeliveredEmailContainer.setMessageListener(deliveredEmailWorker2);
-
-        return simpleMessageListenerDeliveredEmailContainer;
-    }
+//    @Bean
+//    MessageListenerContainer messageListenerDeliveredEmailContainer2(
+//            ConnectionFactory connectionFactory,
+//            DeliveredEmailWorker2 deliveredEmailWorker2
+//    ) {
+//        SimpleMessageListenerContainer simpleMessageListenerDeliveredEmailContainer = new SimpleMessageListenerContainer();
+//        simpleMessageListenerDeliveredEmailContainer.setConnectionFactory(connectionFactory);
+//        simpleMessageListenerDeliveredEmailContainer.setQueues(deliveredEmailQueue());
+//        simpleMessageListenerDeliveredEmailContainer.setMessageListener(deliveredEmailWorker2);
+//
+//        return simpleMessageListenerDeliveredEmailContainer;
+//    }
 }

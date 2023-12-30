@@ -13,6 +13,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.time.ZonedDateTime;
 
@@ -38,19 +39,19 @@ public class DeliveredEmailWorker implements MessageListener {
         String[] stringMessage = new String(message.getBody()).split(",");
         String toEmail = stringMessage[0];
         String shipmentNumber = stringMessage[1];
-        DeliveredEmailTemplate deliveredEmailTemplate = this.getEmailDetails(toEmail, shipmentNumber);
 
-        emailService.sendEmail(
-                deliveredEmailTemplate.getToEmail(),
-                deliveredEmailTemplate.getSubject(),
-                deliveredEmailTemplate.getBody());
+        String subject = shipmentNumber + " has been delivered to the recipient";
+
+        emailService.sendEmailWithHtmlTemplate(
+                toEmail,
+                subject,
+                "DeliveredShipmentEmail.html",
+                this.getContext(shipmentNumber));
     }
 
 
-    private DeliveredEmailTemplate getEmailDetails(String toEmail, String shipmentNumber){
+    private Context getContext(String shipmentNumber){
         Shipment shipment = shipmentService.getShipment(shipmentNumber);
-
-        String subject = shipmentNumber + " has been delivered to the recipient";
 
         String receiverName = shipment.getReceiverName();
 
@@ -66,15 +67,15 @@ public class DeliveredEmailWorker implements MessageListener {
         ZonedDateTime deliveredTime = tracking.getCreatedAt();
         String stringTime = Utils.convertToHumanTime(deliveredTime);
 
-        return DeliveredEmailTemplate.builder()
-                .toEmail(toEmail)
-                .subject(subject)
-                .shipmentNumber(shipmentNumber)
-                .receiverName(receiverName)
-                .receiverAddress(receiverAddress)
-                .receiverDistrictName(districtName)
-                .receiverProvinceName(provinceName)
-                .stringDeliveredDate(stringTime)
-                .build();
+        Context context = new Context();
+        context.setVariable("shipmentNumber", shipmentNumber);
+        context.setVariable("receiverName", receiverName);
+        context.setVariable("receiverAddress", receiverAddress);
+        context.setVariable("receiverDistrictName", districtName);
+        context.setVariable("receiverProvinceName", provinceName);
+        context.setVariable("stringDeliveredDate", stringTime);
+
+        return context;
     }
+
 }

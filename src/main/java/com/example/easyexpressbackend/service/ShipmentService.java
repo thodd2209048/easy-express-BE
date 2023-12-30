@@ -21,7 +21,7 @@ import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPublicResponse;
-import com.example.easyexpressbackend.service.rabbitMq.EmailMessageProducer;
+import com.example.easyexpressbackend.service.rabbitMq.DeliveredEmailRequestProducer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class ShipmentService {
     private final StaffService staffService;
     private final HubService hubService;
     private final AmqpTemplate amqpTemplate;
-    private final EmailMessageProducer emailMessageProducer;
+    private final DeliveredEmailRequestProducer deliveredEmailRequestProducer;
 
     @Value("${defaultEmail}")
     private String toEmail;
@@ -58,7 +58,7 @@ public class ShipmentService {
                            StaffService staffService,
                            HubService hubService,
                            AmqpTemplate amqpTemplate,
-                           EmailMessageProducer emailMessageProducer) {
+                           DeliveredEmailRequestProducer deliveredEmailRequestProducer) {
         this.shipmentRepository = shipmentRepository;
         this.trackingRepository = trackingRepository;
         this.shipmentMapper = shipmentMapper;
@@ -67,7 +67,7 @@ public class ShipmentService {
         this.staffService = staffService;
         this.hubService = hubService;
         this.amqpTemplate = amqpTemplate;
-        this.emailMessageProducer = emailMessageProducer;
+        this.deliveredEmailRequestProducer = deliveredEmailRequestProducer;
     }
 
     //    ---------- CRUD SHIPMENT ----------
@@ -155,8 +155,7 @@ public class ShipmentService {
         shipmentRepository.save(shipment);
 
         if (tracking.getShipmentStatus() == ShipmentStatus.DELIVERED) {
-            String toEmail = ""
-            emailMessageProducer.convertAndSendDeliveredEmail(toEmail, shipmentNumber);
+            deliveredEmailRequestProducer.convertAndSendDeliveredEmail(toEmail, shipmentNumber);
         }
         long end = System.currentTimeMillis();
         System.out.println("---------------------------------Time to add tracking: " + (end - start) + "---------------------------------");
@@ -261,6 +260,9 @@ public class ShipmentService {
 
         String receiverDistrictCode = shipment.getReceiverDistrictCode();
         DistrictResponse receiverDistrict = regionService.getDistrictResponseByCode(receiverDistrictCode);
+
+        shipmentPublicResponse.setSenderDistrict(senderDistrict);
+        shipmentPublicResponse.setReceiverDistrict(receiverDistrict);
 
         return shipmentPublicResponse;
     }

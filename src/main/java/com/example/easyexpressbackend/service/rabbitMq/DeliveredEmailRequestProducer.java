@@ -1,15 +1,12 @@
 package com.example.easyexpressbackend.service.rabbitMq;
 
-import com.example.easyexpressbackend.modal.DeliveredEmailTemplate;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class EmailMessageProducer {
+public class DeliveredEmailRequestProducer {
 //    private final ObjectMapper objectMapper;
     private final AmqpTemplate amqpTemplate;
 
@@ -20,7 +17,7 @@ public class EmailMessageProducer {
     private String deliveredEmailRouteKey;
 
     @Autowired
-    public EmailMessageProducer(
+    public DeliveredEmailRequestProducer(
 //            ObjectMapper objectMapper,
                                 AmqpTemplate amqpTemplate) {
 //        this.objectMapper = objectMapper;
