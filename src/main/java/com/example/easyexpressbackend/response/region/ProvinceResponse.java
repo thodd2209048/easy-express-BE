@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash("provinces")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

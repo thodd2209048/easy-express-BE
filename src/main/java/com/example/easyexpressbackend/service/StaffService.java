@@ -8,7 +8,8 @@ import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.StaffMapper;
 import com.example.easyexpressbackend.repository.StaffRepository;
-import com.example.easyexpressbackend.response.StaffResponse;
+import com.example.easyexpressbackend.response.staff.CrudStaffResponse;
+import com.example.easyexpressbackend.response.staff.StaffInListShipmentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,33 +32,29 @@ public class StaffService {
         this.mapper = mapper;
     }
 
-    public Page<StaffResponse> listStaffs(Pageable pageable, Long hubId, String searchTerm) {
+    public Page<CrudStaffResponse> listStaffs(Pageable pageable, Long hubId, String searchTerm) {
         return repository.listStaffsByHubIdAndSearch(pageable, hubId, searchTerm)
                 .map(this::convertToStaffResponse);
     }
 
-    public StaffResponse findStaffResponseById(Long id) {
-        return mapper.staffToStaffResponse(this.findById(id));
+    public CrudStaffResponse findStaffResponseById(Long id) {
+        return mapper.staffToCrudStaffResponse(this.findById(id));
     }
 
-    public StaffResponse addStaff(AddStaffDto addStaffDto) {
+    public CrudStaffResponse addStaff(AddStaffDto addStaffDto) {
         Long hubId = addStaffDto.getHubId();
-        boolean existHub = hubService.existsById(hubId);
-        if (!existHub) throw new ObjectNotFoundException(
-                "Hub with id: " + hubId + " does not exist");
+        hubService.validateHubId(hubId);
 
         Staff newStaff = mapper.addStaffToStaff(addStaffDto);
         repository.save(newStaff);
         return this.convertToStaffResponse(newStaff);
     }
 
-    public StaffResponse updateStaff(Long id, UpdateStaffDto updateStaffDto) {
+    public CrudStaffResponse updateStaff(Long id, UpdateStaffDto updateStaffDto) {
         Optional<Staff> staffOptional = repository.findById(id);
         if (staffOptional.isEmpty()) throw new ObjectNotFoundException("Staff with id: " + id + "does not exist");
         Long hubId = updateStaffDto.getHubId();
-        boolean existHub = hubService.existsById(hubId);
-        if (!existHub) throw new ObjectNotFoundException(
-                "Staff with id: " + hubId + " does not exist");
+        hubService.validateHubId(hubId);
 
         Staff currentStaff = staffOptional.get();
         Staff newStaff = mapper.copy(currentStaff);
@@ -75,19 +72,18 @@ public class StaffService {
         repository.deleteById(id);
     }
 
-    private StaffResponse convertToStaffResponse(Staff staff) {
-        StaffResponse staffResponse = mapper.staffToStaffResponse(staff);
+    private CrudStaffResponse convertToStaffResponse(Staff staff) {
+        CrudStaffResponse crudStaffResponse = mapper.staffToCrudStaffResponse(staff);
         Hub hub = hubService.getHubById(staff.getHubId());
         String hubName = hub.getName();
-        staffResponse.setHubName(hubName);
-        return staffResponse;
+        crudStaffResponse.setHubName(hubName);
+        return crudStaffResponse;
     }
 
     public Staff findById(Long id) {
-        Optional<Staff> optionalStaff = repository.findById(id);
-        if (optionalStaff.isEmpty())
-            throw new ObjectNotFoundException("Staff with id: " + id + " does not exist");
-        return optionalStaff.get();
+        if (id == null) return null;
+        return repository.findById(id)
+                .orElseThrow(()-> new ObjectNotFoundException("Staff with id: " + id + " does not exist"));
     }
 
     public void validateId(Long id) {

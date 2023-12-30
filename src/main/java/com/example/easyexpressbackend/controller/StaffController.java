@@ -2,7 +2,7 @@ package com.example.easyexpressbackend.controller;
 
 import com.example.easyexpressbackend.dto.staff.AddStaffDto;
 import com.example.easyexpressbackend.dto.staff.UpdateStaffDto;
-import com.example.easyexpressbackend.response.StaffResponse;
+import com.example.easyexpressbackend.response.staff.CrudStaffResponse;
 import com.example.easyexpressbackend.service.StaffService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class StaffController {
     }
 
     @GetMapping({"/", ""})
-    public Page<StaffResponse> listStaffs(
+    public Page<CrudStaffResponse> listStaffs(
             @PageableDefault(sort = {"id"}) Pageable pageable,
             @RequestParam(required = false) Long hubId,
             @RequestParam(required = false, value = "sort-field") String sortField,
@@ -42,12 +42,12 @@ public class StaffController {
     }
 
     @PostMapping({"/", ""})
-    public StaffResponse addStaff(@RequestBody @Valid AddStaffDto addStaffDto) {
+    public CrudStaffResponse addStaff(@RequestBody @Valid AddStaffDto addStaffDto) {
         return service.addStaff(addStaffDto);
     }
 
     @PutMapping("/{id}")
-    public StaffResponse updateStaff(
+    public CrudStaffResponse updateStaff(
             @PathVariable Long id,
             @RequestBody UpdateStaffDto updateStaffDto
     ) {

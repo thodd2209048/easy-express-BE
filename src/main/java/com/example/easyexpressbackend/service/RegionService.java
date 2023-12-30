@@ -4,16 +4,13 @@ import com.example.easyexpressbackend.entity.region.District;
 import com.example.easyexpressbackend.entity.region.DistrictsCache;
 import com.example.easyexpressbackend.entity.region.Province;
 import com.example.easyexpressbackend.entity.region.ProvincesCache;
-import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.RegionMapper;
 import com.example.easyexpressbackend.repository.redis.DistrictsCacheRepository;
 import com.example.easyexpressbackend.repository.redis.ProvincesCacheRepository;
 import com.example.easyexpressbackend.repository.region.DistrictRepository;
 import com.example.easyexpressbackend.repository.region.ProvinceRepository;
-import com.example.easyexpressbackend.response.region.DistrictResponse;
-import com.example.easyexpressbackend.response.region.InputDistrictResponse;
-import com.example.easyexpressbackend.response.region.InputProvinceResponse;
-import com.example.easyexpressbackend.response.region.ProvinceResponse;
+import com.example.easyexpressbackend.response.region.NameCodeDistrictResponse;
+import com.example.easyexpressbackend.response.region.NameCodeProvinceResponse;
 import com.example.easyexpressbackend.service.convert.RegionConvert;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,7 +29,6 @@ public class RegionService {
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
     private final RegionMapper mapper;
-
     private final ProvincesCacheRepository provincesCacheRepository;
     private final DistrictsCacheRepository districtsCacheRepository;
     private final RegionConvert regionConvert;
@@ -102,7 +98,7 @@ public class RegionService {
         districts.add(district);
     }
 
-    public List<InputProvinceResponse> listProvince() {
+    public List<NameCodeProvinceResponse> listProvince() {
         Optional<ProvincesCache> provincesCacheOptional = provincesCacheRepository.findById(1L);
 
         if (provincesCacheOptional.isPresent()
@@ -111,8 +107,8 @@ public class RegionService {
         }
 
         List<Province> provinces = provinceRepository.findAll();
-        List<InputProvinceResponse> provinceResponses = provinces.stream()
-                .map(mapper::provinceToInputProvinceResponse)
+        List<NameCodeProvinceResponse> provinceResponses = provinces.stream()
+                .map(mapper::provinceToNameCodeProvinceResponse)
                 .toList();
 
         ProvincesCache provincesCache = ProvincesCache.builder()
@@ -126,7 +122,7 @@ public class RegionService {
         return provinceResponses;
     }
 
-    public List<InputDistrictResponse> listDistricts() {
+    public List<NameCodeDistrictResponse> listDistricts() {
         Optional<DistrictsCache> districtsCacheOptional = districtsCacheRepository.findById(1L);
         if (districtsCacheOptional.isPresent()
                 && districtsCacheOptional.get().getDistricts() != null
@@ -135,8 +131,8 @@ public class RegionService {
         }
 
         List<District> districts = districtRepository.findAll();
-        List<InputDistrictResponse> districtResponses = districts.stream()
-                .map(regionConvert::convertDistrictToInputDistrictResponse)
+        List<NameCodeDistrictResponse> districtResponses = districts.stream()
+                .map(regionConvert::districtToNameCodeDistrictResponse)
                 .toList();
 
         DistrictsCache districtsCache = DistrictsCache.builder()
@@ -149,40 +145,5 @@ public class RegionService {
         return districtResponses;
     }
 
-    public DistrictResponse convertDistrictToDistrictResponse(District district) {
-        if (district == null) return null;
-        DistrictResponse districtResponse = mapper.districtToDistrictResponse(district);
-        ProvinceResponse provinceResponse = getProvinceResponseByCode(district.getProvinceCode());
-        districtResponse.setProvince(provinceResponse);
-        return districtResponse;
-    }
-
-    private ProvinceResponse getProvinceResponseByCode(String code) {
-        if (code == null) return null;
-        Province province = getProvinceByCode(code);
-        return mapper.provinceToProvinceResponse(province);
-    }
-
-    private Province getProvinceByCode(String code) {
-        if (code == null) return null;
-        Optional<Province> provinceOptional = provinceRepository.findByCode(code);
-        if (provinceOptional.isEmpty())
-            throw new ObjectNotFoundException("Province with code: " + code + " does not exist.");
-        return provinceOptional.get();
-    }
-
-    public District getDistrictByCode(String code) {
-        if (code == null) return null;
-        Optional<District> districtOptional = districtRepository.findByCode(code);
-        if (districtOptional.isEmpty())
-            throw new ObjectNotFoundException("District with code: " + code + " does not exist.");
-        return districtOptional.get();
-    }
-
-    public DistrictResponse getDistrictResponseByCode(String code) {
-        if (code == null) return null;
-        District district = this.getDistrictByCode(code);
-        return this.convertDistrictToDistrictResponse(district);
-    }
 }
 

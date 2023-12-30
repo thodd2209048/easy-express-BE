@@ -2,11 +2,11 @@ package com.example.easyexpressbackend.service.worker;
 
 import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.entity.Tracking;
-import com.example.easyexpressbackend.modal.DeliveredEmailTemplate;
-import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.service.EmailService;
 import com.example.easyexpressbackend.service.RegionService;
 import com.example.easyexpressbackend.service.ShipmentService;
+import com.example.easyexpressbackend.service.convert.RegionConvert;
 import com.example.easyexpressbackend.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
@@ -23,16 +23,18 @@ public class DeliveredEmailWorker implements MessageListener {
     private final ObjectMapper objectMapper;
     private final ShipmentService shipmentService;
     private final RegionService regionService;
+    private final RegionConvert regionConvert;
 
     @Autowired
     public DeliveredEmailWorker(EmailService emailService,
                                 ObjectMapper objectMapper,
                                 ShipmentService shipmentService,
-                                RegionService regionService) {
+                                RegionService regionService, RegionConvert regionConvert) {
         this.emailService = emailService;
         this.objectMapper = objectMapper;
         this.shipmentService = shipmentService;
         this.regionService = regionService;
+        this.regionConvert = regionConvert;
     }
 
     public void onMessage(Message message) {
@@ -58,7 +60,7 @@ public class DeliveredEmailWorker implements MessageListener {
         String receiverAddress = shipment.getReceiverAddress();
 
         String districtCode = shipment.getReceiverDistrictCode();
-        DistrictResponse districtResponse = regionService.getDistrictResponseByCode(districtCode);
+        DistrictNameAndProvinceResponse districtResponse = regionConvert.districtToDistrictNameAndProvinceResponse(districtCode);
         String districtName = districtResponse.getName();
         String provinceName = districtResponse.getProvince().getName();
 

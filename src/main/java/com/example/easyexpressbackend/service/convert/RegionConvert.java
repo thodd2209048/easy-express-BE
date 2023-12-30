@@ -1,7 +1,6 @@
 package com.example.easyexpressbackend.service.convert;
 
 import com.example.easyexpressbackend.entity.region.District;
-import com.example.easyexpressbackend.entity.region.DistrictsCache;
 import com.example.easyexpressbackend.entity.region.Province;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.RegionMapper;
@@ -10,8 +9,6 @@ import com.example.easyexpressbackend.repository.region.ProvinceRepository;
 import com.example.easyexpressbackend.response.region.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class RegionConvert {
@@ -36,7 +33,9 @@ public class RegionConvert {
                 .orElseThrow(()-> new ObjectNotFoundException("Province with code: " + code + " does not exist."));
     }
 
-    public DistrictNameAndProvinceResponse convertDistrictToDistrictNameAndProvinceResponse(String districtCode){
+//    ---------- CONVERT ----------
+
+    public DistrictNameAndProvinceResponse districtToDistrictNameAndProvinceResponse(String districtCode){
         District district = this.getDistrictByCode(districtCode);
         DistrictNameAndProvinceResponse districtResponse = mapper.districtToDistrictNameAndProvinceResponse(district);
 
@@ -49,12 +48,19 @@ public class RegionConvert {
         return districtResponse;
     }
 
-    public InputDistrictResponse convertDistrictToInputDistrictResponse(District district) {
-        InputDistrictResponse districtResponse = mapper.districtToInputDistrictResponse(district);
+    public NameCodeDistrictResponse districtToNameCodeDistrictResponse(District district) {
+        NameCodeDistrictResponse districtResponse = mapper.districtToNameCodeDistrictResponse(district);
 
         Province province = this.getProvinceByCode(district.getProvinceCode());
-        InputProvinceResponse provinceResponse = mapper.provinceToInputProvinceResponse(province);
+        NameCodeProvinceResponse provinceResponse = mapper.provinceToNameCodeProvinceResponse(province);
         districtResponse.setProvince(provinceResponse);
+
         return districtResponse;
     }
+
+    public NameCodeDistrictResponse districtToNameCodeDistrictResponse(String districtCode){
+        District district = this.getDistrictByCode(districtCode);
+        return this.districtToNameCodeDistrictResponse(district);
+    }
+
 }

@@ -13,15 +13,17 @@ import com.example.easyexpressbackend.mapper.ShipmentMapper;
 import com.example.easyexpressbackend.mapper.TrackingMapper;
 import com.example.easyexpressbackend.repository.ShipmentRepository;
 import com.example.easyexpressbackend.repository.TrackingRepository;
-import com.example.easyexpressbackend.response.HubResponse;
-import com.example.easyexpressbackend.response.StaffResponse;
-import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.example.easyexpressbackend.response.hub.HubNameAndIdResponse;
+import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.response.shipment.AddShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ListShipmentResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
-import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
+import com.example.easyexpressbackend.response.staff.CrudStaffResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingInListShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPublicResponse;
+import com.example.easyexpressbackend.service.convert.RegionConvert;
 import com.example.easyexpressbackend.service.convert.ShipmentConvert;
 import com.example.easyexpressbackend.service.rabbitMq.DeliveredEmailRequestProducer;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -48,6 +50,7 @@ public class ShipmentService {
     private final DeliveredEmailRequestProducer deliveredEmailRequestProducer;
 
     private final ShipmentConvert shipmentConvert;
+    private final RegionConvert regionConvert;
 
     @Value("${defaultEmail}")
     private String toEmail;
@@ -62,7 +65,9 @@ public class ShipmentService {
                            StaffService staffService,
                            HubService hubService,
                            AmqpTemplate amqpTemplate,
-                           DeliveredEmailRequestProducer deliveredEmailRequestProducer, ShipmentConvert shipmentConvert) {
+                           DeliveredEmailRequestProducer deliveredEmailRequestProducer,
+                           ShipmentConvert shipmentConvert,
+                           RegionConvert regionConvert) {
         this.shipmentRepository = shipmentRepository;
         this.trackingRepository = trackingRepository;
         this.shipmentMapper = shipmentMapper;
@@ -73,23 +78,18 @@ public class ShipmentService {
         this.amqpTemplate = amqpTemplate;
         this.deliveredEmailRequestProducer = deliveredEmailRequestProducer;
         this.shipmentConvert = shipmentConvert;
+        this.regionConvert = regionConvert;
     }
 
     //    ---------- CRUD SHIPMENT ----------
-    public Page<ShipmentResponse> listShipments(Pageable pageable,
-                                                Long hubId,
-                                                ShipmentStatus status,
-                                                ZonedDateTime startDateTime) {
+    public Page<ListShipmentResponse> listShipments(Pageable pageable,
+                                                    Long hubId,
+                                                    ShipmentStatus status,
+                                                    ZonedDateTime startDateTime) {
         ZonedDateTime endDateTime = startDateTime == null ? null : startDateTime.plusHours(24);
         return shipmentRepository.findShipmentsFilterByHubIdAndStatusAndDateTime(
                         pageable, hubId, status, startDateTime, endDateTime)
-                .map(this::convertShipmentToShipmentResponse);
-    }
-
-    public ShipmentResponse getShipmentResponse(String number) {
-        if (number == null) return null;
-        Shipment shipment = this.getShipment(number);
-        return this.convertShipmentToShipmentResponse(shipment);
+                .map(this::convertShipmentToListShipmentResponse);
     }
 
     public Shipment getShipment(String number) {
@@ -126,7 +126,7 @@ public class ShipmentService {
 
         List<Tracking> trackingList = trackingRepository.findAllByShipmentNumberOrderByCreatedAtDesc(shipmentNumber);
         List<TrackingPublicResponse> trackingPublicResponseList = trackingList.stream()
-                .map(this::convertTrackingToTrackingResponse)
+                .map(this::convertToSubTrackingPublicResponse)
                 .toList();
 
         TrackingAShipmentResponse trackingAShipmentResponse = new TrackingAShipmentResponse();
@@ -192,7 +192,7 @@ public class ShipmentService {
         ShipmentStatus nextShipmentStatus = addTrackingDto.getShipmentStatus();
         this.validateNextStatus(lastShipmentStatus, nextShipmentStatus);
 //check hub
-        hubService.validate(addTrackingDto.getHubId());
+        hubService.validateHubId(addTrackingDto.getHubId());
 
         if (lastShipmentStatus != ShipmentStatus.SHIPMENT_INFORMATION_RECEIVED) {
             Long newHubId = addTrackingDto.getHubId();
@@ -225,28 +225,20 @@ public class ShipmentService {
 
     private TrackingPrivateResponse convertTrackingToTrackingPrivateResponse(Tracking tracking) {
         TrackingPrivateResponse trackingPrivateResponse = trackingMapper.trackingToTrackingPrivateResponse(tracking);
-        convertToTrackingResponseInformation(tracking, trackingPrivateResponse);
+
+        Long hubId = tracking.getHubId();
+        Hub hub = hubService.getHubById(hubId);
+        HubNameAndIdResponse hubResponse = hubId == null ? null : hubService.convertHubToHubInListShipmentResponse(hub);
+
+        DistrictNameAndProvinceResponse districtResponse = regionConvert.districtToDistrictNameAndProvinceResponse(tracking.getDistrictCode());
+
+        trackingPrivateResponse.setHub(hubResponse);
+        trackingPrivateResponse.setDistrict(districtResponse);
 
         Long staffId = tracking.getStaffId();
-        StaffResponse staffResponse = staffId == null ? null : staffService.findStaffResponseById(staffId);
-        trackingPrivateResponse.setStaff(staffResponse);
+        CrudStaffResponse crudStaffResponse = staffId == null ? null : staffService.findStaffResponseById(staffId);
+        trackingPrivateResponse.setStaff(crudStaffResponse);
         return trackingPrivateResponse;
-    }
-
-    private TrackingPublicResponse convertTrackingToTrackingResponse(Tracking tracking) {
-        TrackingPublicResponse trackingPublicResponse = trackingMapper.trackingToTrackingResponse(tracking);
-        convertToTrackingResponseInformation(tracking, trackingPublicResponse);
-        return trackingPublicResponse;
-    }
-
-    private <T extends TrackingPublicResponse> void convertToTrackingResponseInformation(Tracking tracking, T trackingResponse) {
-        Long hubId = tracking.getHubId();
-        HubResponse hubResponse = hubId == null ? null : hubService.getHubResponseById(hubId);
-
-        DistrictResponse districtResponse = regionService.getDistrictResponseByCode(tracking.getDistrictCode());
-
-        trackingResponse.setHub(hubResponse);
-        trackingResponse.setDistrict(districtResponse);
     }
 
     //    VALIDATE
@@ -261,10 +253,10 @@ public class ShipmentService {
         ShipmentPublicResponse shipmentPublicResponse = shipmentMapper.shipmentToShipmentPublicResponse(shipment);
 
         String senderDistrictCode = shipment.getSenderDistrictCode();
-        DistrictResponse senderDistrict = regionService.getDistrictResponseByCode(senderDistrictCode);
+        DistrictNameAndProvinceResponse senderDistrict = regionConvert.districtToDistrictNameAndProvinceResponse(senderDistrictCode);
 
         String receiverDistrictCode = shipment.getReceiverDistrictCode();
-        DistrictResponse receiverDistrict = regionService.getDistrictResponseByCode(receiverDistrictCode);
+        DistrictNameAndProvinceResponse receiverDistrict = regionConvert.districtToDistrictNameAndProvinceResponse(receiverDistrictCode);
 
         shipmentPublicResponse.setSenderDistrict(senderDistrict);
         shipmentPublicResponse.setReceiverDistrict(receiverDistrict);
@@ -272,28 +264,39 @@ public class ShipmentService {
         return shipmentPublicResponse;
     }
 
-    public ShipmentResponse convertShipmentToShipmentResponse(Shipment shipment) {
-        ShipmentResponse shipmentResponse = shipmentMapper.shipmentToShipmentResponse(shipment);
-
-        DistrictResponse senderDistrict = regionService.getDistrictResponseByCode(shipment.getSenderDistrictCode());
-        DistrictResponse receiverDistrict = regionService.getDistrictResponseByCode(shipment.getReceiverDistrictCode());
-
-        Long trackingId = shipment.getLastTrackingId();
-        Tracking tracking = trackingRepository.findById(trackingId)
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        "Last tracking with Id: " + trackingId + " does not exist."
-                ));
-        TrackingPrivateResponse trackingPrivateResponse = this.convertTrackingToTrackingPrivateResponse(tracking);
-
-        shipmentResponse.setSenderDistrict(senderDistrict);
-        shipmentResponse.setReceiverDistrict(receiverDistrict);
-        shipmentResponse.setLastTracking(trackingPrivateResponse);
-
-        return shipmentResponse;
-    }
-
     public Shipment convertAddShipmentToShipment(AddShipmentDto addShipmentDto) {
         return shipmentMapper.addShipmentToShipment(addShipmentDto);
     }
 
+    private ListShipmentResponse convertShipmentToListShipmentResponse(Shipment shipment){
+        ListShipmentResponse shipmentResponse = shipmentMapper.shipmentToListShipmentResponse(shipment);
+
+        Tracking lastTracking = this.getTracking(shipment.getLastTrackingId());
+        TrackingInListShipmentResponse lastTrackingResponse = this.convertTrackingToTrackingInListShipmentResponse(lastTracking);
+
+        shipmentResponse.setLastTracking(lastTrackingResponse);
+
+        return shipmentResponse;
+    }
+
+    private TrackingInListShipmentResponse convertTrackingToTrackingInListShipmentResponse(Tracking tracking){
+        TrackingInListShipmentResponse trackingResponse = trackingMapper.trackingToTrackingInListShipmentResponse(tracking);
+
+        Hub hub = hubService.getHubById(tracking.getHubId());
+        HubNameAndIdResponse hubResponse = hubService.convertHubToHubInListShipmentResponse(hub);
+
+        trackingResponse.setHub(hubResponse);
+
+        return trackingResponse;
+    }
+
+    private TrackingPublicResponse convertToSubTrackingPublicResponse(Tracking tracking) {
+        TrackingPublicResponse trackingResponse = trackingMapper.trackingToTrackingPublicResponse(tracking);
+
+        DistrictNameAndProvinceResponse districtResponse = regionConvert.districtToDistrictNameAndProvinceResponse(tracking.getDistrictCode());
+
+        trackingResponse.setDistrict(districtResponse);
+
+        return trackingResponse;
+    }
 }

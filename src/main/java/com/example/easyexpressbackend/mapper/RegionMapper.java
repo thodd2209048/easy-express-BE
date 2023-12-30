@@ -11,19 +11,15 @@ import org.mapstruct.factory.Mappers;
 public interface RegionMapper {
     RegionMapper INSTANCE = Mappers.getMapper(RegionMapper.class);
 
-    ProvinceResponse provinceToProvinceResponse(Province province);
-
     ProvinceNameResponse provinceToProvinceNameResponse(Province province);
 
-    InputProvinceResponse provinceToInputProvinceResponse(Province province);
+    NameCodeProvinceResponse provinceToNameCodeProvinceResponse(Province province);
 
-    @Mapping(target = "province", ignore = true)
-    DistrictResponse districtToDistrictResponse(District district);
 
     @Mapping(target = "province", ignore = true)
     DistrictNameAndProvinceResponse districtToDistrictNameAndProvinceResponse(District district);
 
     @Mapping(target = "province", ignore = true)
-    InputDistrictResponse districtToInputDistrictResponse(District district);
+    NameCodeDistrictResponse districtToNameCodeDistrictResponse(District district);
 
 }

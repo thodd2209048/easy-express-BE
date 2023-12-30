@@ -7,8 +7,11 @@ import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.HubMapper;
 import com.example.easyexpressbackend.repository.HubRepository;
-import com.example.easyexpressbackend.response.HubResponse;
-import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.example.easyexpressbackend.response.hub.CrudHubResponse;
+import com.example.easyexpressbackend.response.hub.HubNameAndIdResponse;
+import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceResponse;
+import com.example.easyexpressbackend.response.region.NameCodeDistrictResponse;
+import com.example.easyexpressbackend.service.convert.RegionConvert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,21 +24,24 @@ public class HubService {
     private final HubRepository repository;
     private final HubMapper mapper;
     private final RegionService regionService;
+    private final RegionConvert regionConvert;
 
     @Autowired
     public HubService(HubRepository repository,
                       HubMapper mapper,
-                      RegionService regionService) {
+                      RegionService regionService,
+                      RegionConvert regionConvert) {
         this.repository = repository;
         this.mapper = mapper;
         this.regionService = regionService;
+        this.regionConvert = regionConvert;
     }
 
-    public Page<HubResponse> listHub(Pageable pageable, String searchTerm) {
-        return repository.findAllAndSearch(pageable, searchTerm).map(this::convertHubToHubResponse);
+    public Page<CrudHubResponse> listHub(Pageable pageable, String searchTerm) {
+        return repository.findAllAndSearch(pageable, searchTerm).map(this::convertHubToCrudHubResponse);
     }
 
-    public HubResponse addHub(AddHubDto addHubDto) {
+    public CrudHubResponse addHub(AddHubDto addHubDto) {
         String newName = addHubDto.getName();
         Optional<Hub> optionalHubName = repository.findByName(newName);
         if (optionalHubName.isPresent())
@@ -46,18 +52,20 @@ public class HubService {
             throw new DuplicateObjectException("Hub with location: " + newLocation + " does exist");
         Hub newHub = mapper.addHubToHub(addHubDto);
         repository.save(newHub);
-        return this.convertHubToHubResponse(newHub);
+        return this.convertHubToCrudHubResponse(newHub);
     }
 
-    public HubResponse updateHub(Long id, UpdateHubDto updateHubDto) {
-        Hub currentHub = this.getHubById(id);
+    public CrudHubResponse updateHub(Long id, UpdateHubDto updateHubDto) {
+        Hub currentHub = repository.findById(id)
+                .orElseThrow(()-> new ObjectNotFoundException("Hub with id: " + id + "does not exist"));
+
         Hub newHub = mapper.copy(currentHub);
         mapper.updateHub(updateHubDto, newHub);
         if (newHub.equals(currentHub))
             throw new DuplicateObjectException("The updated object is the same as the existing one.");
 
         repository.save(newHub);
-        return this.convertHubToHubResponse(newHub);
+        return this.convertHubToCrudHubResponse(newHub);
     }
 
     public void deleteHub(Long id) {
@@ -66,35 +74,29 @@ public class HubService {
         repository.deleteById(id);
     }
 
-    public boolean existsById(Long id) {
-        return repository.existsById(id);
+    public void validateHubId(Long id){
+        if(!repository.existsById(id))
+            throw new ObjectNotFoundException("Hub with id: " + id + " does not exist.");
     }
 
     public Hub getHubById(Long id) {
-        Optional<Hub> optionalHub = repository.findById(id);
-        if (optionalHub.isEmpty()) throw new ObjectNotFoundException("Hub with id: " + id + "does not exist");
-        return optionalHub.get();
+        if(id == null) return null;
+        return repository.findById(id)
+                .orElseThrow(()->new ObjectNotFoundException("Hub with id: " + id + "does not exist"));
     }
 
-    public HubResponse getHubResponseById(Long id) {
-        Hub hub = this.getHubById(id);
-        return this.convertHubToHubResponse(hub);
+    public HubNameAndIdResponse convertHubToHubInListShipmentResponse(Hub hub){
+        return mapper.hubToHubNameAndIdResponse(hub);
     }
 
-    public HubResponse convertHubToHubResponse(Hub hub) {
-        HubResponse hubResponse = mapper.hubToHubResponse(hub);
+    public CrudHubResponse convertHubToCrudHubResponse(Hub hub){
+        CrudHubResponse hubResponse = mapper.hubToCrudHubResponse(hub);
 
         String districtCode = hub.getDistrictCode();
-        DistrictResponse districtResponse = regionService.getDistrictResponseByCode(districtCode);
+        NameCodeDistrictResponse districtResponse = regionConvert.districtToNameCodeDistrictResponse(districtCode);
 
         hubResponse.setDistrict(districtResponse);
 
         return hubResponse;
-    }
-
-    // ---------- VALIDATE ----------
-    public void validate(Long id) {
-        if (!repository.existsById(id))
-            throw new ObjectNotFoundException("Hub with id: " + id + " does not exist");
     }
 }

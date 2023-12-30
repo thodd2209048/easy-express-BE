@@ -3,7 +3,7 @@ package com.example.easyexpressbackend.mapper;
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
 import com.example.easyexpressbackend.entity.Shipment;
 import com.example.easyexpressbackend.response.shipment.AddShipmentResponse;
-import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.ListShipmentResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,16 +23,15 @@ public interface ShipmentMapper {
 
     @Mapping(target = "senderDistrict", ignore = true)
     @Mapping(target = "receiverDistrict", ignore = true)
-    @Mapping(target = "lastTracking", ignore = true)
-    ShipmentResponse shipmentToShipmentResponse(Shipment shipment);
-
-    @Mapping(target = "senderDistrict", ignore = true)
-    @Mapping(target = "receiverDistrict", ignore = true)
     ShipmentPublicResponse shipmentToShipmentPublicResponse(Shipment shipment);
+
+    @Mapping(target = "lastTracking", ignore = true)
+    ListShipmentResponse shipmentToListShipmentResponse(Shipment shipment);
 
     @Mapping(target = "senderDistrict", ignore = true)
     @Mapping(target = "receiverDistrict", ignore = true)
     AddShipmentResponse shipmentToAddShipmentResponse(Shipment shipment);
+
 
     Shipment copy(Shipment shipment);
 
