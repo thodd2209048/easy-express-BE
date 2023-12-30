@@ -11,7 +11,6 @@ import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.ShipmentMapper;
 import com.example.easyexpressbackend.mapper.TrackingMapper;
-import com.example.easyexpressbackend.modal.EmailMessage;
 import com.example.easyexpressbackend.repository.ShipmentRepository;
 import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
@@ -22,10 +21,11 @@ import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPublicResponse;
-import com.example.easyexpressbackend.service.rabbitMq.EmailMessageProducer;
+import com.example.easyexpressbackend.service.rabbitMq.DeliveredEmailRequestProducer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,9 +42,11 @@ public class ShipmentService {
     private final RegionService regionService;
     private final StaffService staffService;
     private final HubService hubService;
-
     private final AmqpTemplate amqpTemplate;
-    private final EmailMessageProducer emailMessageProducer;
+    private final DeliveredEmailRequestProducer deliveredEmailRequestProducer;
+
+    @Value("${defaultEmail}")
+    private String toEmail;
 
 
     @Autowired
@@ -56,7 +58,7 @@ public class ShipmentService {
                            StaffService staffService,
                            HubService hubService,
                            AmqpTemplate amqpTemplate,
-                           EmailMessageProducer emailMessageProducer) {
+                           DeliveredEmailRequestProducer deliveredEmailRequestProducer) {
         this.shipmentRepository = shipmentRepository;
         this.trackingRepository = trackingRepository;
         this.shipmentMapper = shipmentMapper;
@@ -65,7 +67,7 @@ public class ShipmentService {
         this.staffService = staffService;
         this.hubService = hubService;
         this.amqpTemplate = amqpTemplate;
-        this.emailMessageProducer = emailMessageProducer;
+        this.deliveredEmailRequestProducer = deliveredEmailRequestProducer;
     }
 
     //    ---------- CRUD SHIPMENT ----------
@@ -112,7 +114,7 @@ public class ShipmentService {
         return this.convertShipmentToShipmentResponse(shipment);
     }
 
-
+    //    ---------- CRUD TRACKING ----------
     public TrackingAShipmentResponse trackingAShipment(String shipmentNumber) {
         Shipment shipment = this.getShipment(shipmentNumber);
         ShipmentPublicResponse shipmentPublicResponse = this.convertShipmentToShipmentPublicResponse(shipment);
@@ -126,6 +128,11 @@ public class ShipmentService {
         trackingAShipmentResponse.setShipment(shipmentPublicResponse);
         trackingAShipmentResponse.setTrackingList(trackingPublicResponseList);
         return trackingAShipmentResponse;
+    }
+
+    public Tracking getTracking(Long trackingId){
+        return trackingRepository.findById(trackingId)
+                .orElseThrow(()-> new ObjectNotFoundException("Tracking with id: " + trackingId + " does not exist."));
     }
 
     public TrackingPrivateResponse addTracking(AddTrackingDto addTrackingDto) {
@@ -148,11 +155,7 @@ public class ShipmentService {
         shipmentRepository.save(shipment);
 
         if (tracking.getShipmentStatus() == ShipmentStatus.DELIVERED) {
-            EmailMessage emailMessage = new EmailMessage(
-                    "thoddth2209048@fpt.edu.vn",
-                    "BoL: " + shipmentNumber + " has been delivered to the recipient",
-                    "The shipment with the BoL number " + shipmentNumber + " has been delivered to the recipient.");
-            emailMessageProducer.convertAndSendDeliveredEmail(emailMessage);
+            deliveredEmailRequestProducer.convertAndSendDeliveredEmail(toEmail, shipmentNumber);
         }
         long end = System.currentTimeMillis();
         System.out.println("---------------------------------Time to add tracking: " + (end - start) + "---------------------------------");
@@ -257,6 +260,9 @@ public class ShipmentService {
 
         String receiverDistrictCode = shipment.getReceiverDistrictCode();
         DistrictResponse receiverDistrict = regionService.getDistrictResponseByCode(receiverDistrictCode);
+
+        shipmentPublicResponse.setSenderDistrict(senderDistrict);
+        shipmentPublicResponse.setReceiverDistrict(receiverDistrict);
 
         return shipmentPublicResponse;
     }

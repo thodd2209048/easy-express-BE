@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${shipmentNumber} + ' has been delivered'"></title>
+</head>
+<body style="padding: 2rem; background-color: #f8f9fa;">
+<div style="border: 1px solid #dee2e6; border-radius: 0.4rem; background-color: white; padding-bottom: 1rem;">
+    <div style="text-align: center">
+        <h2 style="padding: 1rem 2rem;margin: 0; background-color: #28a745; color: white; border-top-left-radius: 0.4rem;border-top-right-radius: 0.4rem;"
+            th:text="|Shipment ${shipmentNumber} has been delivered.|"></h2>
+    </div>
+    <div style="padding: 0.5rem 1rem;"><p>Dear customer,</p>
+
+        <p th:text="|We are writing to inform you that your shipment with tracking number ${shipmentNumber} has been
+           delivered successfully.|"></p>
+
+        <p th:text="|The shipment was delivered to ${receiverName} at ${receiverAddress} ${receiverDistrictName}
+            ${receiverProvinceName} on ${stringDeliveredDate}. The package was in good condition and no damage was reported.|"></p>
+
+        <p>We thank you for your business and we look forward to serving you again in the future.</p>
+
+        <p>Sincerely,</p>
+        <a th:href="@{http://localhost:3000/tracking(shipment=${shipmentNumber})}">
+            <button style="background-color: #007bff; color: white; border: none; padding: 0.5rem 1rem; margin-top: 1.5rem; cursor: pointer;">Tracking your shipment</button>
+        </a>
+
+    </div>
+
+</div>
+<div style="margin-top: 1.5rem; padding: 0.5rem 1rem;">
+    <h4 style="margin: 0;">Easy Express</h4>
+    <p style="margin: 0;">Tel: +84 99 999 999</p>
+    <p style="margin: 0;">Email: cs@easyexpress.com</p>
+    <p style="margin: 0;">28, Hoi Nong Dan, Cau Giay, Ha Noi</p>
+</div>
+<!--<script src="../static/js/jquery-3.3.1.slim.min.js" th:src="@{/js/jquery-3.3.1.slim.min.js}"></script>-->
+<!--<script src="../static/js/popper.min.js" th:src="@{/js/popper.min.js}"></script>-->
+<!--<script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>-->
+</body>
+</html>

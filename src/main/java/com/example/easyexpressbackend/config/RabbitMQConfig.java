@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.config;
 
 import com.example.easyexpressbackend.service.worker.DeliveredEmailWorker;
-import com.example.easyexpressbackend.service.worker.DeliveredEmailWorker2;
+//import com.example.easyexpressbackend.service.worker.DeliveredEmailWorker2;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
@@ -33,16 +33,16 @@ public class RabbitMQConfig {
         return simpleMessageListenerDeliveredEmailContainer;
     }
 
-    @Bean
-    MessageListenerContainer messageListenerDeliveredEmailContainer2(
-            ConnectionFactory connectionFactory,
-            DeliveredEmailWorker2 deliveredEmailWorker2
-    ) {
-        SimpleMessageListenerContainer simpleMessageListenerDeliveredEmailContainer = new SimpleMessageListenerContainer();
-        simpleMessageListenerDeliveredEmailContainer.setConnectionFactory(connectionFactory);
-        simpleMessageListenerDeliveredEmailContainer.setQueues(deliveredEmailQueue());
-        simpleMessageListenerDeliveredEmailContainer.setMessageListener(deliveredEmailWorker2);
-
-        return simpleMessageListenerDeliveredEmailContainer;
-    }
+//    @Bean
+//    MessageListenerContainer messageListenerDeliveredEmailContainer2(
+//            ConnectionFactory connectionFactory,
+//            DeliveredEmailWorker2 deliveredEmailWorker2
+//    ) {
+//        SimpleMessageListenerContainer simpleMessageListenerDeliveredEmailContainer = new SimpleMessageListenerContainer();
+//        simpleMessageListenerDeliveredEmailContainer.setConnectionFactory(connectionFactory);
+//        simpleMessageListenerDeliveredEmailContainer.setQueues(deliveredEmailQueue());
+//        simpleMessageListenerDeliveredEmailContainer.setMessageListener(deliveredEmailWorker2);
+//
+//        return simpleMessageListenerDeliveredEmailContainer;
+//    }
 }
