@@ -1,11 +1,14 @@
 package com.example.easyexpressbackend.controller;
 
-import com.example.easyexpressbackend.response.region.DistrictResponse;
-import com.example.easyexpressbackend.response.region.ProvinceResponse;
+import com.example.easyexpressbackend.response.region.NameCodeDistrictResponse;
+import com.example.easyexpressbackend.response.region.NameCodeProvinceResponse;
 import com.example.easyexpressbackend.service.RegionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -20,12 +23,12 @@ public class RegionController {
     }
 
     @GetMapping("/provinces")
-    public List<ProvinceResponse> listProvince()  {
+    public List<NameCodeProvinceResponse> listProvince()  {
         return service.listProvince();
     }
 
     @GetMapping("/districts")
-    public List<DistrictResponse> listDistricts(){
+    public List<NameCodeDistrictResponse> listDistricts(){
         return service.listDistricts();
     }
 

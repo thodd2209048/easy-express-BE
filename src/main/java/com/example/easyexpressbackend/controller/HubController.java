@@ -2,7 +2,7 @@ package com.example.easyexpressbackend.controller;
 
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
 import com.example.easyexpressbackend.dto.hub.UpdateHubDto;
-import com.example.easyexpressbackend.response.HubResponse;
+import com.example.easyexpressbackend.response.hub.CrudHubResponse;
 import com.example.easyexpressbackend.service.HubService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,10 @@ public class HubController {
     }
 
     @GetMapping({"/",""})
-    public Page<HubResponse> listHub(@PageableDefault(sort = {"id"})  Pageable pageable,
-                                     @RequestParam(required = false, defaultValue = "id") String sortField,
-                                     @RequestParam(required = false) String direction,
-                                     @RequestParam(required = false, defaultValue = "") String searchTerm
+    public Page<CrudHubResponse> listHub(@PageableDefault(sort = {"id"})  Pageable pageable,
+                                         @RequestParam(required = false, defaultValue = "id") String sortField,
+                                         @RequestParam(required = false) String direction,
+                                         @RequestParam(required = false, defaultValue = "") String searchTerm
                                      ){
         Sort.Direction sortDirection = Sort.Direction.fromOptionalString(direction).orElse(Sort.Direction.ASC);
 
@@ -41,12 +41,12 @@ public class HubController {
     }
 
     @PostMapping({"/",""})
-    public HubResponse addHub(@RequestBody @Valid AddHubDto addHubDto){
+    public CrudHubResponse addHub(@RequestBody @Valid AddHubDto addHubDto){
         return service.addHub(addHubDto);
     }
 
     @PutMapping("/{id}")
-    public HubResponse updateHub(
+    public CrudHubResponse updateHub(
             @PathVariable Long id,
             @RequestBody UpdateHubDto updateHubDto
             ){

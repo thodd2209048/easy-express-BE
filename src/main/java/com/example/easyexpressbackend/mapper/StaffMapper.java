@@ -3,11 +3,11 @@ package com.example.easyexpressbackend.mapper;
 import com.example.easyexpressbackend.dto.staff.AddStaffDto;
 import com.example.easyexpressbackend.dto.staff.UpdateStaffDto;
 import com.example.easyexpressbackend.entity.Staff;
-import com.example.easyexpressbackend.response.StaffResponse;
+import com.example.easyexpressbackend.response.staff.CrudStaffResponse;
+import com.example.easyexpressbackend.response.staff.StaffInListShipmentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -21,7 +21,9 @@ public interface StaffMapper {
     Staff addStaffToStaff (AddStaffDto addStaffDto);
 
     @Mapping(target = "hubName", ignore = true)
-    StaffResponse staffToStaffResponse(Staff staff);
+    CrudStaffResponse staffToCrudStaffResponse(Staff staff);
+
+    StaffInListShipmentResponse staffToStaffInListShipmentResponse(Staff staff);
 
     Staff copy(Staff staff);
 

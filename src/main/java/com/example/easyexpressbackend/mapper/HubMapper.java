@@ -3,7 +3,8 @@ package com.example.easyexpressbackend.mapper;
 import com.example.easyexpressbackend.dto.hub.AddHubDto;
 import com.example.easyexpressbackend.dto.hub.UpdateHubDto;
 import com.example.easyexpressbackend.entity.Hub;
-import com.example.easyexpressbackend.response.HubResponse;
+import com.example.easyexpressbackend.response.hub.CrudHubResponse;
+import com.example.easyexpressbackend.response.hub.HubNameAndIdResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -18,8 +19,11 @@ public interface HubMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Hub addHubToHub(AddHubDto addHubDto);
 
+
+    HubNameAndIdResponse hubToHubNameAndIdResponse(Hub hub);
+
     @Mapping(target = "district", ignore = true)
-    HubResponse hubToHubResponse(Hub hub);
+    CrudHubResponse hubToCrudHubResponse(Hub hub);
 
     Hub copy(Hub hub);
 

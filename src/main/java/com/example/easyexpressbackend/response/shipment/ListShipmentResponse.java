@@ -1,7 +1,6 @@
 package com.example.easyexpressbackend.response.shipment;
 
-import com.example.easyexpressbackend.response.region.DistrictResponse;
-import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
+import com.example.easyexpressbackend.response.tracking.TrackingInListShipmentResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,19 +8,17 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShipmentResponse {
+public class ListShipmentResponse {
     private Long id;
     private String number;
     //    FROM
     private String senderName;
     private String senderPhone;
     private String senderAddress;
-    private DistrictResponse senderDistrict;
     //    TO
     private String receiverName;
     private String receiverPhone;
     private String receiverAddress;
-    private DistrictResponse receiverDistrict;
     //    SHIPMENT DETAILS
     private Double valueInDollar;
     private String description;
@@ -30,6 +27,6 @@ public class ShipmentResponse {
     private Double widthInCm;
     private Double heightInCm;
     // FURTHER
-    private TrackingPrivateResponse lastTracking;
+    private TrackingInListShipmentResponse lastTracking;
     private String newNumber;
 }

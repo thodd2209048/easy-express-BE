@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 
+@RedisHash("districts")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProvinceResponse {
-    private Long id;
+public class NameCodeDistrictResponse {
     private String name;
     private String code;
-    private String codename;
+    private NameCodeProvinceResponse province;
 }

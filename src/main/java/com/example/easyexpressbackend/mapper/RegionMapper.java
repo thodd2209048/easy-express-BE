@@ -2,8 +2,7 @@ package com.example.easyexpressbackend.mapper;
 
 import com.example.easyexpressbackend.entity.region.District;
 import com.example.easyexpressbackend.entity.region.Province;
-import com.example.easyexpressbackend.response.region.DistrictResponse;
-import com.example.easyexpressbackend.response.region.ProvinceResponse;
+import com.example.easyexpressbackend.response.region.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -12,9 +11,15 @@ import org.mapstruct.factory.Mappers;
 public interface RegionMapper {
     RegionMapper INSTANCE = Mappers.getMapper(RegionMapper.class);
 
-    ProvinceResponse provinceToProvinceResponse(Province province);
+    ProvinceNameResponse provinceToProvinceNameResponse(Province province);
+
+    NameCodeProvinceResponse provinceToNameCodeProvinceResponse(Province province);
+
 
     @Mapping(target = "province", ignore = true)
-    DistrictResponse districtToDistrictResponse(District district);
+    DistrictNameAndProvinceResponse districtToDistrictNameAndProvinceResponse(District district);
+
+    @Mapping(target = "province", ignore = true)
+    NameCodeDistrictResponse districtToNameCodeDistrictResponse(District district);
 
 }

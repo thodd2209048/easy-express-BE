@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.entity.region;
 
-import com.example.easyexpressbackend.response.region.ProvinceResponse;
+import com.example.easyexpressbackend.response.region.NameCodeProvinceResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +16,5 @@ import java.util.List;
 @Builder
 public class ProvincesCache {
     private Long id;
-    private List<ProvinceResponse> provinces;
+    private List<NameCodeProvinceResponse> provinces;
 }

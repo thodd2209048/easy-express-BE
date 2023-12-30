@@ -10,9 +10,7 @@ import org.springframework.data.redis.core.RedisHash;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProvinceResponse {
-    private Long id;
+public class DistrictNameAndProvinceResponse {
     private String name;
-    private String code;
-    private String codename;
+    private ProvinceNameResponse province;
 }

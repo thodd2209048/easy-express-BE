@@ -1,7 +1,7 @@
 package com.example.easyexpressbackend.controller.shipment;
 
 import com.example.easyexpressbackend.dto.shipment.AddShipmentDto;
-import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
+import com.example.easyexpressbackend.response.shipment.AddShipmentResponse;
 import com.example.easyexpressbackend.service.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class CustomerShipmentController {
 
     //    Create new shipment
     @PostMapping({"", "/"})
-    public ShipmentResponse addShipment(@RequestBody @Valid AddShipmentDto addShipmentDto) {
+    public AddShipmentResponse addShipment(@RequestBody @Valid AddShipmentDto addShipmentDto) {
         return shipmentService.addShipment(addShipmentDto);
     }
 }
