@@ -1,6 +1,8 @@
 package com.example.easyexpressbackend.controller;
 
 import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.example.easyexpressbackend.response.region.InputDistrictResponse;
+import com.example.easyexpressbackend.response.region.InputProvinceResponse;
 import com.example.easyexpressbackend.response.region.ProvinceResponse;
 import com.example.easyexpressbackend.service.RegionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,12 +22,12 @@ public class RegionController {
     }
 
     @GetMapping("/provinces")
-    public List<ProvinceResponse> listProvince()  {
+    public List<InputProvinceResponse> listProvince()  {
         return service.listProvince();
     }
 
     @GetMapping("/districts")
-    public List<DistrictResponse> listDistricts(){
+    public List<InputDistrictResponse> listDistricts(){
         return service.listDistricts();
     }
 

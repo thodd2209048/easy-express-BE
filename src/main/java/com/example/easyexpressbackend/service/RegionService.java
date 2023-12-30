@@ -11,7 +11,10 @@ import com.example.easyexpressbackend.repository.redis.ProvincesCacheRepository;
 import com.example.easyexpressbackend.repository.region.DistrictRepository;
 import com.example.easyexpressbackend.repository.region.ProvinceRepository;
 import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.example.easyexpressbackend.response.region.InputDistrictResponse;
+import com.example.easyexpressbackend.response.region.InputProvinceResponse;
 import com.example.easyexpressbackend.response.region.ProvinceResponse;
+import com.example.easyexpressbackend.service.convert.RegionConvert;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +35,7 @@ public class RegionService {
 
     private final ProvincesCacheRepository provincesCacheRepository;
     private final DistrictsCacheRepository districtsCacheRepository;
+    private final RegionConvert regionConvert;
 
 
     @Autowired
@@ -40,13 +44,14 @@ public class RegionService {
                          RestTemplate restTemplate,
                          RegionMapper mapper,
                          ProvincesCacheRepository provincesCacheRepository,
-                         DistrictsCacheRepository districtsCacheRepository) {
+                         DistrictsCacheRepository districtsCacheRepository, RegionConvert regionConvert) {
         this.provinceRepository = provinceRepository;
         this.districtRepository = districtRepository;
         this.restTemplate = restTemplate;
         this.mapper = mapper;
         this.provincesCacheRepository = provincesCacheRepository;
         this.districtsCacheRepository = districtsCacheRepository;
+        this.regionConvert = regionConvert;
     }
 
     //    @Scheduled(cron = "0 0 0 1 1 ?")
@@ -97,7 +102,7 @@ public class RegionService {
         districts.add(district);
     }
 
-    public List<ProvinceResponse> listProvince() {
+    public List<InputProvinceResponse> listProvince() {
         Optional<ProvincesCache> provincesCacheOptional = provincesCacheRepository.findById(1L);
 
         if (provincesCacheOptional.isPresent()
@@ -106,8 +111,8 @@ public class RegionService {
         }
 
         List<Province> provinces = provinceRepository.findAll();
-        List<ProvinceResponse> provinceResponses = provinces.stream()
-                .map(mapper::provinceToProvinceResponse)
+        List<InputProvinceResponse> provinceResponses = provinces.stream()
+                .map(mapper::provinceToInputProvinceResponse)
                 .toList();
 
         ProvincesCache provincesCache = ProvincesCache.builder()
@@ -121,7 +126,7 @@ public class RegionService {
         return provinceResponses;
     }
 
-    public List<DistrictResponse> listDistricts() {
+    public List<InputDistrictResponse> listDistricts() {
         Optional<DistrictsCache> districtsCacheOptional = districtsCacheRepository.findById(1L);
         if (districtsCacheOptional.isPresent()
                 && districtsCacheOptional.get().getDistricts() != null
@@ -130,8 +135,8 @@ public class RegionService {
         }
 
         List<District> districts = districtRepository.findAll();
-        List<DistrictResponse> districtResponses = districts.stream()
-                .map(this::convertDistrictToDistrictResponse)
+        List<InputDistrictResponse> districtResponses = districts.stream()
+                .map(regionConvert::convertDistrictToInputDistrictResponse)
                 .toList();
 
         DistrictsCache districtsCache = DistrictsCache.builder()

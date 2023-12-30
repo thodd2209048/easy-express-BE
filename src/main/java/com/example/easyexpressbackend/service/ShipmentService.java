@@ -16,11 +16,13 @@ import com.example.easyexpressbackend.repository.TrackingRepository;
 import com.example.easyexpressbackend.response.HubResponse;
 import com.example.easyexpressbackend.response.StaffResponse;
 import com.example.easyexpressbackend.response.region.DistrictResponse;
+import com.example.easyexpressbackend.response.shipment.AddShipmentResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentPublicResponse;
 import com.example.easyexpressbackend.response.shipment.ShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingAShipmentResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPrivateResponse;
 import com.example.easyexpressbackend.response.tracking.TrackingPublicResponse;
+import com.example.easyexpressbackend.service.convert.ShipmentConvert;
 import com.example.easyexpressbackend.service.rabbitMq.DeliveredEmailRequestProducer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -45,6 +47,8 @@ public class ShipmentService {
     private final AmqpTemplate amqpTemplate;
     private final DeliveredEmailRequestProducer deliveredEmailRequestProducer;
 
+    private final ShipmentConvert shipmentConvert;
+
     @Value("${defaultEmail}")
     private String toEmail;
 
@@ -58,7 +62,7 @@ public class ShipmentService {
                            StaffService staffService,
                            HubService hubService,
                            AmqpTemplate amqpTemplate,
-                           DeliveredEmailRequestProducer deliveredEmailRequestProducer) {
+                           DeliveredEmailRequestProducer deliveredEmailRequestProducer, ShipmentConvert shipmentConvert) {
         this.shipmentRepository = shipmentRepository;
         this.trackingRepository = trackingRepository;
         this.shipmentMapper = shipmentMapper;
@@ -68,6 +72,7 @@ public class ShipmentService {
         this.hubService = hubService;
         this.amqpTemplate = amqpTemplate;
         this.deliveredEmailRequestProducer = deliveredEmailRequestProducer;
+        this.shipmentConvert = shipmentConvert;
     }
 
     //    ---------- CRUD SHIPMENT ----------
@@ -93,7 +98,7 @@ public class ShipmentService {
                         "Shipment with number: " + number + " does not exist"));
     }
 
-    public ShipmentResponse addShipment(AddShipmentDto addShipmentDto) {
+    public AddShipmentResponse addShipment(AddShipmentDto addShipmentDto) {
         Shipment shipment = this.convertAddShipmentToShipment(addShipmentDto);
 
         String number = "9" + RandomStringUtils.randomNumeric(9);
@@ -111,7 +116,7 @@ public class ShipmentService {
         shipment.setLastTrackingId(tracking.getId());
         shipmentRepository.save(shipment);
 
-        return this.convertShipmentToShipmentResponse(shipment);
+        return shipmentConvert.convertShipmentToAddShipmentResponse(shipment);
     }
 
     //    ---------- CRUD TRACKING ----------
