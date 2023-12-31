@@ -6,7 +6,7 @@ import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceRes
 import com.example.easyexpressbackend.service.EmailService;
 import com.example.easyexpressbackend.service.RegionService;
 import com.example.easyexpressbackend.service.ShipmentService;
-import com.example.easyexpressbackend.service.convert.RegionConvert;
+import com.example.easyexpressbackend.service.TrackingService;
 import com.example.easyexpressbackend.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
@@ -22,19 +22,20 @@ public class DeliveredEmailWorker implements MessageListener {
     private final EmailService emailService;
     private final ObjectMapper objectMapper;
     private final ShipmentService shipmentService;
+    private final TrackingService trackingService;
     private final RegionService regionService;
-    private final RegionConvert regionConvert;
 
     @Autowired
     public DeliveredEmailWorker(EmailService emailService,
                                 ObjectMapper objectMapper,
                                 ShipmentService shipmentService,
-                                RegionService regionService, RegionConvert regionConvert) {
+                                TrackingService trackingService,
+                                RegionService regionService) {
         this.emailService = emailService;
         this.objectMapper = objectMapper;
         this.shipmentService = shipmentService;
+        this.trackingService = trackingService;
         this.regionService = regionService;
-        this.regionConvert = regionConvert;
     }
 
     public void onMessage(Message message) {
@@ -60,12 +61,12 @@ public class DeliveredEmailWorker implements MessageListener {
         String receiverAddress = shipment.getReceiverAddress();
 
         String districtCode = shipment.getReceiverDistrictCode();
-        DistrictNameAndProvinceResponse districtResponse = regionConvert.districtToDistrictNameAndProvinceResponse(districtCode);
+        DistrictNameAndProvinceResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(districtCode);
         String districtName = districtResponse.getName();
         String provinceName = districtResponse.getProvince().getName();
 
         Long trackingId = shipment.getLastTrackingId();
-        Tracking tracking = shipmentService.getTracking(trackingId);
+        Tracking tracking = trackingService.getTracking(trackingId);
         ZonedDateTime deliveredTime = tracking.getCreatedAt();
         String stringTime = Utils.convertToHumanTime(deliveredTime);
 

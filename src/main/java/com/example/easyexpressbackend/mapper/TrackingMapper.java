@@ -20,9 +20,6 @@ public interface TrackingMapper {
 
     Tracking addTrackingToTracking (AddTrackingDto addTrackingDto);
 
-    @Mapping(target = "hub", ignore = true)
-    @Mapping(target = "staff", ignore = true)
-    @Mapping(target = "district", ignore = true)
     TrackingPrivateResponse trackingToTrackingPrivateResponse(Tracking tracking);
 
 
