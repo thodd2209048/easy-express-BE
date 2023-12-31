@@ -9,9 +9,7 @@ import com.example.easyexpressbackend.mapper.HubMapper;
 import com.example.easyexpressbackend.repository.HubRepository;
 import com.example.easyexpressbackend.response.hub.CrudHubResponse;
 import com.example.easyexpressbackend.response.hub.HubNameAndIdResponse;
-import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.response.region.NameCodeDistrictResponse;
-import com.example.easyexpressbackend.service.convert.RegionConvert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,17 +22,16 @@ public class HubService {
     private final HubRepository repository;
     private final HubMapper mapper;
     private final RegionService regionService;
-    private final RegionConvert regionConvert;
+
 
     @Autowired
     public HubService(HubRepository repository,
                       HubMapper mapper,
-                      RegionService regionService,
-                      RegionConvert regionConvert) {
+                      RegionService regionService) {
         this.repository = repository;
         this.mapper = mapper;
         this.regionService = regionService;
-        this.regionConvert = regionConvert;
+
     }
 
     public Page<CrudHubResponse> listHub(Pageable pageable, String searchTerm) {
@@ -93,7 +90,7 @@ public class HubService {
         CrudHubResponse hubResponse = mapper.hubToCrudHubResponse(hub);
 
         String districtCode = hub.getDistrictCode();
-        NameCodeDistrictResponse districtResponse = regionConvert.districtToNameCodeDistrictResponse(districtCode);
+        NameCodeDistrictResponse districtResponse = regionService.districtToNameCodeDistrictResponse(districtCode);
 
         hubResponse.setDistrict(districtResponse);
 

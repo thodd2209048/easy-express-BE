@@ -4,14 +4,16 @@ import com.example.easyexpressbackend.entity.region.District;
 import com.example.easyexpressbackend.entity.region.DistrictsCache;
 import com.example.easyexpressbackend.entity.region.Province;
 import com.example.easyexpressbackend.entity.region.ProvincesCache;
+import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.mapper.RegionMapper;
 import com.example.easyexpressbackend.repository.redis.DistrictsCacheRepository;
 import com.example.easyexpressbackend.repository.redis.ProvincesCacheRepository;
 import com.example.easyexpressbackend.repository.region.DistrictRepository;
 import com.example.easyexpressbackend.repository.region.ProvinceRepository;
+import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.response.region.NameCodeDistrictResponse;
 import com.example.easyexpressbackend.response.region.NameCodeProvinceResponse;
-import com.example.easyexpressbackend.service.convert.RegionConvert;
+import com.example.easyexpressbackend.response.region.ProvinceNameResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +33,7 @@ public class RegionService {
     private final RegionMapper mapper;
     private final ProvincesCacheRepository provincesCacheRepository;
     private final DistrictsCacheRepository districtsCacheRepository;
-    private final RegionConvert regionConvert;
+
 
 
     @Autowired
@@ -40,14 +42,13 @@ public class RegionService {
                          RestTemplate restTemplate,
                          RegionMapper mapper,
                          ProvincesCacheRepository provincesCacheRepository,
-                         DistrictsCacheRepository districtsCacheRepository, RegionConvert regionConvert) {
+                         DistrictsCacheRepository districtsCacheRepository) {
         this.provinceRepository = provinceRepository;
         this.districtRepository = districtRepository;
         this.restTemplate = restTemplate;
         this.mapper = mapper;
         this.provincesCacheRepository = provincesCacheRepository;
         this.districtsCacheRepository = districtsCacheRepository;
-        this.regionConvert = regionConvert;
     }
 
     //    @Scheduled(cron = "0 0 0 1 1 ?")
@@ -132,7 +133,7 @@ public class RegionService {
 
         List<District> districts = districtRepository.findAll();
         List<NameCodeDistrictResponse> districtResponses = districts.stream()
-                .map(regionConvert::districtToNameCodeDistrictResponse)
+                .map(this::districtToNameCodeDistrictResponse)
                 .toList();
 
         DistrictsCache districtsCache = DistrictsCache.builder()
@@ -145,5 +146,42 @@ public class RegionService {
         return districtResponses;
     }
 
+    public District getDistrictByCode(String code) {
+        return districtRepository.findByCode(code)
+                .orElseThrow(()-> new ObjectNotFoundException("District with code: " + code + " does not exist."));
+    }
+
+    private Province getProvinceByCode(String code) {
+        return provinceRepository.findByCode(code)
+                .orElseThrow(()-> new ObjectNotFoundException("Province with code: " + code + " does not exist."));
+    }
+
+    public DistrictNameAndProvinceResponse districtToDistrictNameAndProvinceResponse(String districtCode){
+        District district = this.getDistrictByCode(districtCode);
+        DistrictNameAndProvinceResponse districtResponse = mapper.districtToDistrictNameAndProvinceResponse(district);
+
+        String provinceCode = district.getProvinceCode();
+        Province province = this.getProvinceByCode(provinceCode);
+        ProvinceNameResponse provinceNameResponse = mapper.provinceToProvinceNameResponse(province);
+
+        districtResponse.setProvince(provinceNameResponse);
+
+        return districtResponse;
+    }
+
+    public NameCodeDistrictResponse districtToNameCodeDistrictResponse(District district) {
+        NameCodeDistrictResponse districtResponse = mapper.districtToNameCodeDistrictResponse(district);
+
+        Province province = this.getProvinceByCode(district.getProvinceCode());
+        NameCodeProvinceResponse provinceResponse = mapper.provinceToNameCodeProvinceResponse(province);
+        districtResponse.setProvince(provinceResponse);
+
+        return districtResponse;
+    }
+
+    public NameCodeDistrictResponse districtToNameCodeDistrictResponse(String districtCode){
+        District district = this.getDistrictByCode(districtCode);
+        return this.districtToNameCodeDistrictResponse(district);
+    }
 }
 

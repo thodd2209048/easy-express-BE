@@ -37,6 +37,12 @@ public class StaffService {
                 .map(this::convertToStaffResponse);
     }
 
+    public Staff findById(Long id) {
+        if (id == null) return null;
+        return repository.findById(id)
+                .orElseThrow(()-> new ObjectNotFoundException("Staff with id: " + id + " does not exist"));
+    }
+
     public CrudStaffResponse findStaffResponseById(Long id) {
         return mapper.staffToCrudStaffResponse(this.findById(id));
     }
@@ -80,14 +86,14 @@ public class StaffService {
         return crudStaffResponse;
     }
 
-    public Staff findById(Long id) {
-        if (id == null) return null;
-        return repository.findById(id)
-                .orElseThrow(()-> new ObjectNotFoundException("Staff with id: " + id + " does not exist"));
-    }
+
 
     public void validateId(Long id) {
         if (!repository.existsById(id))
             throw new ObjectNotFoundException("Staff with id: " + id + " does not exist");
+    }
+
+    public StaffInListShipmentResponse convertStaffToStaffInListShipmentResponse(Staff staff){
+        return mapper.staffToStaffInListShipmentResponse(staff);
     }
 }

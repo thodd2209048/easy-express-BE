@@ -3,12 +3,14 @@ package com.example.easyexpressbackend.response.shipment;
 import com.example.easyexpressbackend.response.region.DistrictNameAndProvinceResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddShipmentResponse {
+@EqualsAndHashCode(callSuper = false)
+public class AddShipmentResponse extends BaseShipmentWithDistrictResponse{
     private Long id;
     private String number;
     //    FROM
