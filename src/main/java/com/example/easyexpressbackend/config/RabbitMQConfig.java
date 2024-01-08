@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.config;
 
-import com.example.easyexpressbackend.service.worker.DeliveredEmailWorker;
+import com.example.easyexpressbackend.domain.email.worker.DeliveredEmailWorker;
 //import com.example.easyexpressbackend.service.worker.DeliveredEmailWorker2;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.config;
 
-import com.example.easyexpressbackend.response.region.ProvinceResponse;
+import com.example.easyexpressbackend.domain.region.response.ProvinceResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
