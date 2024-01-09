@@ -14,5 +14,4 @@ public class LastTrackingBaseInformation {
     private String stringTime;
     private String districtName;
     private String provinceName;
-
 }
