@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.domain.tracking;
 
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import com.example.easyexpressbackend.domain.hub.Hub;
 import com.example.easyexpressbackend.domain.hub.HubService;
@@ -15,7 +16,6 @@ import com.example.easyexpressbackend.domain.tracking.response.TrackingPublicRes
 import com.example.easyexpressbackend.exception.ActionNotAllowedException;
 import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.domain.shipment.response.ShipmentPublicResponse;
 import com.example.easyexpressbackend.domain.email.EmailRequestProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,7 +170,7 @@ public class TrackingService {
         TrackingInListShipmentResponse trackingResponse = trackingMapper.trackingToTrackingInListShipmentResponse(tracking);
 
         Hub hub = hubService.getHubById(tracking.getHubId());
-        HubNameAndIdResponse hubResponse = hubService.convertHubToHubInListShipmentResponse(hub);
+        HubNameAndIdResponse hubResponse = hubService.convertHubToHubNameIdResponse(hub);
 
         trackingResponse.setHub(hubResponse);
 
@@ -180,7 +180,7 @@ public class TrackingService {
     private TrackingPublicResponse convertToSubTrackingPublicResponse(Tracking tracking) {
         TrackingPublicResponse trackingResponse = trackingMapper.trackingToTrackingPublicResponse(tracking);
 
-        DistrictNameAndProvinceResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(tracking.getDistrictCode());
+        DistrictWithNameResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(tracking.getDistrictCode());
 
         trackingResponse.setDistrict(districtResponse);
 

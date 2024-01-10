@@ -8,10 +8,10 @@ import com.example.easyexpressbackend.domain.region.repository.DistrictRepositor
 import com.example.easyexpressbackend.domain.region.repository.ProvinceRepository;
 import com.example.easyexpressbackend.domain.region.repository.redis.DistrictsCacheRepository;
 import com.example.easyexpressbackend.domain.region.repository.redis.ProvincesCacheRepository;
-import com.example.easyexpressbackend.domain.region.response.NameCodeDistrictResponse;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameCodeResponse;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.region.response.NameCodeProvinceResponse;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.domain.region.response.ProvinceNameResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,7 +59,7 @@ public class RegionService {
         List<Province> provinces = new ArrayList<>();
         List<District> districts = new ArrayList<>();
         List<NameCodeProvinceResponse> provincesCache = new ArrayList<>();
-        List<NameCodeDistrictResponse> districtsCache = new ArrayList<>();
+        List<DistrictWithNameCodeResponse> districtsCache = new ArrayList<>();
 
         for (JsonNode provinceNode : provinceNodes) {
             NameCodeProvinceResponse provinceCache = this.handleDbFromProvinceNode(provinceNode, provinces, provincesCache);
@@ -95,7 +95,7 @@ public class RegionService {
         return provinceResponses;
     }
 
-    public List<NameCodeDistrictResponse> listDistricts() {
+    public List<DistrictWithNameCodeResponse> listDistricts() {
         Optional<DistrictsCache> districtsCacheOptional = districtsCacheRepository.findById(1L);
         if (districtsCacheOptional.isPresent()
                 && districtsCacheOptional.get().getDistricts() != null
@@ -104,8 +104,8 @@ public class RegionService {
         }
 
         List<District> districts = districtRepository.findAll();
-        List<NameCodeDistrictResponse> districtResponses = districts.stream()
-                .map(this::districtToNameCodeDistrictResponse)
+        List<DistrictWithNameCodeResponse> districtResponses = districts.stream()
+                .map(this::districtToDistrictWithNameCodeResponse)
                 .toList();
 
         this.saveDistrictCache(districtResponses);
@@ -114,9 +114,9 @@ public class RegionService {
     }
 
 
-    public DistrictNameAndProvinceResponse districtToDistrictNameAndProvinceResponse(String districtCode) {
+    public DistrictWithNameResponse districtToDistrictNameAndProvinceResponse(String districtCode) {
         District district = this.getDistrictByCode(districtCode);
-        DistrictNameAndProvinceResponse districtResponse = mapper.districtToDistrictNameAndProvinceResponse(district);
+        DistrictWithNameResponse districtResponse = mapper.districtToDistrictWithNameResponse(district);
 
         String provinceCode = district.getProvinceCode();
         Province province = this.getProvinceByCode(provinceCode);
@@ -127,8 +127,8 @@ public class RegionService {
         return districtResponse;
     }
 
-    public NameCodeDistrictResponse districtToNameCodeDistrictResponse(District district) {
-        NameCodeDistrictResponse districtResponse = mapper.districtToNameCodeDistrictResponse(district);
+    public DistrictWithNameCodeResponse districtToDistrictWithNameCodeResponse(District district) {
+        DistrictWithNameCodeResponse districtResponse = mapper.districtToDistrictWithNameCodeResponse(district);
 
         Province province = this.getProvinceByCode(district.getProvinceCode());
         NameCodeProvinceResponse provinceResponse = mapper.provinceToNameCodeProvinceResponse(province);
@@ -137,9 +137,21 @@ public class RegionService {
         return districtResponse;
     }
 
-    public NameCodeDistrictResponse districtToNameCodeDistrictResponse(String districtCode) {
+    public DistrictWithNameCodeResponse districtToDistrictWithNameCodeResponse(String districtCode) {
         District district = this.getDistrictByCode(districtCode);
-        return this.districtToNameCodeDistrictResponse(district);
+        return this.districtToDistrictWithNameCodeResponse(district);
+    }
+
+    public DistrictWithNameResponse getDistrictWithNameResponse(String districtCode) {
+        District district = this.getDistrictByCode(districtCode);
+        DistrictWithNameResponse districtResponse =  mapper.districtToDistrictWithNameResponse(district);
+
+        Province province = this.getProvinceByCode(district.getProvinceCode());
+        ProvinceNameResponse provinceResponse = mapper.provinceToProvinceNameResponse(province);
+
+        districtResponse.setProvince(provinceResponse);
+
+        return districtResponse;
     }
 
     private NameCodeProvinceResponse handleDbFromProvinceNode(JsonNode provinceNode,
@@ -155,7 +167,7 @@ public class RegionService {
 
     private void handleDbFromDistrictNode(JsonNode districtNode,
                                           List<District> districts,
-                                          List<NameCodeDistrictResponse> districtsCache,
+                                          List<DistrictWithNameCodeResponse> districtsCache,
                                           NameCodeProvinceResponse provinceCache) {
         String code = districtNode.get("code").asText();
         String name = districtNode.get("name").asText();
@@ -186,7 +198,7 @@ public class RegionService {
         provincesCacheRepository.save(provincesCache);
     }
 
-    private void saveDistrictCache(List<NameCodeDistrictResponse> districtResponses) {
+    private void saveDistrictCache(List<DistrictWithNameCodeResponse> districtResponses) {
 
         DistrictsCache districtsCache = DistrictsCache.builder()
                 .id(1L)
@@ -233,16 +245,18 @@ public class RegionService {
         return provinceCache;
     }
 
-    private void addDistrictCacheToList(List<NameCodeDistrictResponse> districtsCache,
+    private void addDistrictCacheToList(List<DistrictWithNameCodeResponse> districtsCache,
                                         NameCodeProvinceResponse provinceCache,
                                         String code,
                                         String name) {
-        NameCodeDistrictResponse districtCache = NameCodeDistrictResponse.builder()
+        DistrictWithNameCodeResponse districtCache = DistrictWithNameCodeResponse.builder()
                 .code(code)
                 .name(name)
                 .province(provinceCache)
                 .build();
         districtsCache.add(districtCache);
     }
+
+
 }
 

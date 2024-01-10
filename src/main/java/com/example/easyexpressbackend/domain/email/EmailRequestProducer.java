@@ -3,7 +3,7 @@ package com.example.easyexpressbackend.domain.email;
 import com.example.easyexpressbackend.domain.email.modal.BaseEmailData;
 import com.example.easyexpressbackend.domain.email.modal.LastTrackingBaseInformation;
 import com.example.easyexpressbackend.domain.region.RegionService;
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.shipment.Shipment;
 import com.example.easyexpressbackend.domain.tracking.Tracking;
 import com.example.easyexpressbackend.exception.InvalidValueException;
@@ -90,7 +90,7 @@ public class EmailRequestProducer {
                     "Tracking with id: "+ lastTracking.getId()+ " is not the last tracking of shipment " + shipmentNumber);
 
         String districtCode = lastTracking.getDistrictCode();
-        DistrictNameAndProvinceResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(districtCode);
+        DistrictWithNameResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(districtCode);
         String districtName = districtResponse.getName();
         String provinceName = districtResponse.getProvince().getName();
 

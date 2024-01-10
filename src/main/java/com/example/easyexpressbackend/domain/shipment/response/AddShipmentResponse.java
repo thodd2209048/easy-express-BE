@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.domain.shipment.response;
 
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,12 +17,12 @@ public class AddShipmentResponse extends BaseShipmentWithDistrictResponse{
     private String senderName;
     private String senderPhone;
     private String senderAddress;
-    private DistrictNameAndProvinceResponse senderDistrict;
+    private DistrictWithNameResponse senderDistrict;
     //    TO
     private String receiverName;
     private String receiverPhone;
     private String receiverAddress;
-    private DistrictNameAndProvinceResponse receiverDistrict;
+    private DistrictWithNameResponse receiverDistrict;
     //    SHIPMENT DETAILS
     private Double valueInDollar;
     private String description;

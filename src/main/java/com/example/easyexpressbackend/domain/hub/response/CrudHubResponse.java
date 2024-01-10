@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.domain.hub.response;
 
-import com.example.easyexpressbackend.domain.region.response.NameCodeDistrictResponse;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameCodeResponse;
 import lombok.*;
 
 @Data
@@ -12,5 +12,5 @@ public class CrudHubResponse {
     private Long id;
     private String name;
     private String location;
-    private NameCodeDistrictResponse district;
+    private DistrictWithNameCodeResponse district;
 }

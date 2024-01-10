@@ -5,7 +5,7 @@ import com.example.easyexpressbackend.domain.staff.response.StaffRepository;
 import com.example.easyexpressbackend.domain.hub.HubService;
 import com.example.easyexpressbackend.domain.staff.dto.UpdateStaffDto;
 import com.example.easyexpressbackend.domain.hub.Hub;
-import com.example.easyexpressbackend.domain.staff.response.StaffInListShipmentResponse;
+import com.example.easyexpressbackend.domain.staff.response.StaffIdNameResponse;
 import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.domain.staff.response.CrudStaffResponse;
@@ -36,14 +36,14 @@ public class StaffService {
                 .map(this::convertToStaffResponse);
     }
 
-    public Staff findById(Long id) {
+    public Staff getStaffById(Long id) {
         if (id == null) return null;
         return repository.findById(id)
                 .orElseThrow(()-> new ObjectNotFoundException("Staff with id: " + id + " does not exist"));
     }
 
     public CrudStaffResponse findStaffResponseById(Long id) {
-        return mapper.staffToCrudStaffResponse(this.findById(id));
+        return mapper.staffToCrudStaffResponse(this.getStaffById(id));
     }
 
     public CrudStaffResponse addStaff(AddStaffDto addStaffDto) {
@@ -92,7 +92,7 @@ public class StaffService {
             throw new ObjectNotFoundException("Staff with id: " + id + " does not exist");
     }
 
-    public StaffInListShipmentResponse convertStaffToStaffInListShipmentResponse(Staff staff){
-        return mapper.staffToStaffInListShipmentResponse(staff);
+    public StaffIdNameResponse convertStaffToStaffNameIdResponse(Staff staff){
+        return mapper.staffToStaffIdNameResponse(staff);
     }
 }

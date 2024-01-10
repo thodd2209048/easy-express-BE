@@ -1,6 +1,6 @@
 package com.example.easyexpressbackend.domain.region;
 
-import com.example.easyexpressbackend.domain.region.response.NameCodeDistrictResponse;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameCodeResponse;
 import com.example.easyexpressbackend.domain.region.response.NameCodeProvinceResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class RegionController {
     }
 
     @GetMapping("/districts")
-    public List<NameCodeDistrictResponse> listDistricts(){
+    public List<DistrictWithNameCodeResponse> listDistricts(){
         return service.listDistricts();
     }
 

@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.domain.shipment;
 
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.shipment.dto.AddShipmentDto;
@@ -10,7 +11,6 @@ import com.example.easyexpressbackend.domain.shipment.response.ShipmentPublicRes
 import com.example.easyexpressbackend.domain.tracking.TrackingService;
 import com.example.easyexpressbackend.domain.tracking.response.TrackingInListShipmentResponse;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
 import com.example.easyexpressbackend.domain.shipment.response.AddShipmentResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,11 +119,11 @@ public class ShipmentService {
 
     private void setDistricts(BaseShipmentWithDistrictResponse response, Shipment shipment ) {
         String senderDistrictCode = shipment.getSenderDistrictCode();
-        DistrictNameAndProvinceResponse senderDistrictResponse =
+        DistrictWithNameResponse senderDistrictResponse =
                 regionService.districtToDistrictNameAndProvinceResponse(senderDistrictCode);
 
         String receiverDistrictCode = shipment.getReceiverDistrictCode();
-        DistrictNameAndProvinceResponse receiverDistrictResponse =
+        DistrictWithNameResponse receiverDistrictResponse =
                 regionService.districtToDistrictNameAndProvinceResponse(receiverDistrictCode);
 
         response.setSenderDistrict(senderDistrictResponse);

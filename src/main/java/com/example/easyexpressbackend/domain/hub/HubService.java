@@ -3,11 +3,11 @@ package com.example.easyexpressbackend.domain.hub;
 import com.example.easyexpressbackend.domain.hub.dto.AddHubDto;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.hub.dto.UpdateHubDto;
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameCodeResponse;
 import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
 import com.example.easyexpressbackend.domain.hub.response.CrudHubResponse;
 import com.example.easyexpressbackend.domain.hub.response.HubNameAndIdResponse;
-import com.example.easyexpressbackend.domain.region.response.NameCodeDistrictResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -80,7 +80,7 @@ public class HubService {
                 .orElseThrow(()->new ObjectNotFoundException("Hub with id: " + id + "does not exist"));
     }
 
-    public HubNameAndIdResponse convertHubToHubInListShipmentResponse(Hub hub){
+    public HubNameAndIdResponse convertHubToHubNameIdResponse(Hub hub){
         return mapper.hubToHubNameAndIdResponse(hub);
     }
 
@@ -88,7 +88,7 @@ public class HubService {
         CrudHubResponse hubResponse = mapper.hubToCrudHubResponse(hub);
 
         String districtCode = hub.getDistrictCode();
-        NameCodeDistrictResponse districtResponse = regionService.districtToNameCodeDistrictResponse(districtCode);
+        DistrictWithNameCodeResponse districtResponse = regionService.districtToDistrictWithNameCodeResponse(districtCode);
 
         hubResponse.setDistrict(districtResponse);
 
