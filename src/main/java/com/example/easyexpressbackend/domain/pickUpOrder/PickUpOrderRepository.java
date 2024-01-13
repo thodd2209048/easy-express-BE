@@ -8,12 +8,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @Repository
 public interface PickUpOrderRepository extends JpaRepository<PickUpOrder, Long> {
 
-    @Query(" SELECT o FROM PickUpOrder o " +
-            " WHERE :status IS NULL OR o.status = :status " +
-            " AND (cast(:startTime AS timestamp) IS NULL OR (o.startTime > :startTime  AND o.startTime < :endTime)) ")
-    Page<PickUpOrder> getPickUpOrderByCondition(Pageable pageable, PickUpOrderStatus status, ZonedDateTime startTime, ZonedDateTime endTime);
+    Optional<PickUpOrder> findByOrderNumber(String orderNumber);
+
+    @Query( value = " SELECT o FROM PickUpOrder o " +
+            " WHERE (:status IS NULL OR o.status = :status) " +
+            " AND (cast(:startTime AS timestamp) IS NULL " +
+            " OR (o.startTime > :startTime AND o.startTime < :endTime)) ")
+    Page<PickUpOrder> getPickUpOrderByCondition(Pageable pageable,
+                                                PickUpOrderStatus status,
+                                                ZonedDateTime startTime,
+                                                ZonedDateTime endTime);
 }

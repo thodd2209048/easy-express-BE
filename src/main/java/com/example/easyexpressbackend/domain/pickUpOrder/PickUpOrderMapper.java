@@ -6,6 +6,7 @@ import com.example.easyexpressbackend.domain.pickUpOrder.dto.AdminUpdatePickUpOr
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.CustomerUpdatePickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.AdminUpdatePickUpOrderResponse;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.CustomerPickUpOrderResponse;
+import com.example.easyexpressbackend.domain.pickUpOrder.reponse.ShortPickUpOrderResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -17,7 +18,7 @@ public interface PickUpOrderMapper {
 
     PickUpOrder copyPickUpOrder(PickUpOrder pickUpOrder);
 
-    @Mapping(target = "id", ignore = true)
+
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
@@ -33,7 +34,8 @@ public interface PickUpOrderMapper {
     @Mapping(target = "staff", ignore = true)
     AdminUpdatePickUpOrderResponse toAdminUpdateOrderResponse(PickUpOrder pickUpOrder);
 
-    @Mapping(target = "id", ignore = true)
+    ShortPickUpOrderResponse toShortPickUpOrderResponse(PickUpOrder pickUpOrder);
+
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "hubId", ignore = true)

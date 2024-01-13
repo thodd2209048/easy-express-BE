@@ -17,13 +17,13 @@ import java.time.ZonedDateTime;
 public class AddPickUpOrderDto {
     @NotBlank
     @Size(max = 30)
-    private String customerName;
+    private String senderName;
     @NotBlank
     @Size(max = 15)
-    private String phone;
+    private String senderPhone;
     @NotBlank
     @Size(max = 90)
-    private String address;
+    private String senderAddress;
     @NotBlank
     private String districtCode;
     //    TIME

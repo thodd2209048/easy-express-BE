@@ -6,6 +6,7 @@ import com.example.easyexpressbackend.domain.pickUpOrder.constant.PickUpOrderSta
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.AddPickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.CustomerUpdatePickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.CustomerPickUpOrderResponse;
+import com.example.easyexpressbackend.domain.pickUpOrder.reponse.ShortPickUpOrderResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.ZonedDateTime;
 
 @RestController
-@RequestMapping(path = "/api/customer/pickUpOrder")
+@RequestMapping(path = "/api/customer/pickUpOrders")
 public class CustomerPickUpOrderController {
     private final PickUpOrderService service;
 
@@ -25,12 +26,17 @@ public class CustomerPickUpOrderController {
     }
 
     @GetMapping({"/",""})
-    public Page<CustomerPickUpOrderResponse> getPickUpOrders(
+    public Page<ShortPickUpOrderResponse> listPickUpOrders(
             Pageable pageable,
             @RequestParam(value = "status", required = false) PickUpOrderStatus status,
-            @RequestParam(value = "start", required = false) ZonedDateTime startTime
+            @RequestParam(value = "startTime", required = false) ZonedDateTime startTime
     ){
-        return service.getPickUpOrders(pageable, status, startTime);
+        return service.listPickUpOrders(pageable, status, startTime);
+    }
+
+    @GetMapping("/{id}")
+    public CustomerPickUpOrderResponse getPickUpOrder(@PathVariable Long id){
+        return service.getPickupOrder(id);
     }
 
     @PostMapping({"/",""})

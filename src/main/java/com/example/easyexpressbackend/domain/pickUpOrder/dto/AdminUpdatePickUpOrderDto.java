@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class AdminUpdatePickUpOrderDto {
     private PickUpOrderStatus status;
     private Long hubId;
-    private Long staffId;
 
     @AssertTrue
     public boolean isValidStatus() {

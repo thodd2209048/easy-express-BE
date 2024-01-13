@@ -9,6 +9,7 @@ import com.example.easyexpressbackend.domain.pickUpOrder.dto.AdminUpdatePickUpOr
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.CustomerUpdatePickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.AdminUpdatePickUpOrderResponse;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.CustomerPickUpOrderResponse;
+import com.example.easyexpressbackend.domain.pickUpOrder.reponse.ShortPickUpOrderResponse;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.staff.Staff;
@@ -17,6 +18,7 @@ import com.example.easyexpressbackend.domain.staff.response.StaffIdNameResponse;
 import com.example.easyexpressbackend.exception.ActionNotAllowedException;
 import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,18 +47,29 @@ public class PickUpOrderService {
         this.staffService = staffService;
     }
 
-    public Page<CustomerPickUpOrderResponse> getPickUpOrders(Pageable pageable,
-                                                             PickUpOrderStatus status,
-                                                             ZonedDateTime startTime) {
+    public Page<ShortPickUpOrderResponse> listPickUpOrders(Pageable pageable,
+                                                           PickUpOrderStatus status,
+                                                           ZonedDateTime startTime) {
+
         ZonedDateTime endTime = startTime != null ? startTime.plusDays(1) : null;
-        Page<PickUpOrder> orders = repository.getPickUpOrderByCondition(pageable, status, startTime, endTime);
-        return orders.map(this::convertToCustomerPickUpOrderResponse);
+        Page<PickUpOrder> orders = repository.getPickUpOrderByCondition(
+                pageable,
+                status,
+                startTime,
+                endTime);
+        return orders.map(this::convertToShortPickUpOrderResponse);
     }
 
+    public CustomerPickUpOrderResponse getPickupOrder(Long id) {
+        PickUpOrder order = this.getOrder(id);
+        return this.convertToCustomerPickUpOrderResponse(order);
+    }
 
     public CustomerPickUpOrderResponse addPickupOrder(AddPickUpOrderDto addPickUpOrderDto) {
         PickUpOrder order = mapper.fromAddPickUpOrderDto(addPickUpOrderDto);
+        String number = "ORDER_1" + RandomStringUtils.randomNumeric(11);
 
+        order.setOrderNumber(number);
         order.setStatus(PickUpOrderStatus.READY_FOR_PICK_UP);
 
         repository.save(order);
@@ -88,8 +101,6 @@ public class PickUpOrderService {
 
         return this.convertToAdminUpdatePickUpOrderResponse(savedOrder, hub, staff);
     }
-
-
 
     private PickUpOrder updatePickUpOrder(Long id, PickUpOrder orderForDto) {
         PickUpOrder currentOrder = this.getOrder(id);
@@ -149,6 +160,17 @@ public class PickUpOrderService {
 
         orderResponse.setHub(hubResponse);
         orderResponse.setStaff(staffResponse);
+
+        return orderResponse;
+    }
+
+    private ShortPickUpOrderResponse convertToShortPickUpOrderResponse(PickUpOrder pickUpOrder) {
+        ShortPickUpOrderResponse orderResponse = mapper.toShortPickUpOrderResponse(pickUpOrder);
+
+        String districtCode = pickUpOrder.getDistrictCode();
+        DistrictWithNameResponse districtResponse = regionService.getDistrictWithNameResponse(districtCode);
+
+        orderResponse.setDistrict(districtResponse);
 
         return orderResponse;
     }

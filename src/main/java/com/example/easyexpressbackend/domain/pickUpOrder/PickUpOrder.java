@@ -2,10 +2,8 @@ package com.example.easyexpressbackend.domain.pickUpOrder;
 
 import com.example.easyexpressbackend.domain.pickUpOrder.constant.PickUpOrderStatus;
 import com.example.easyexpressbackend.entity.IdentityIdBaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.example.easyexpressbackend.entity.NoIdBaseEntity;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -19,15 +17,15 @@ import java.time.ZonedDateTime;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public class PickUpOrder extends IdentityIdBaseEntity {
+    private String orderNumber;
     @Enumerated(EnumType.STRING)
     private PickUpOrderStatus status;
-    //    STAFF
+    //    HUB
     private Long hubId;
-    private Long staffId;
-    //     CUSTOMER DETAILS
-    private String customerName;
-    private String phone;
-    private String address;
+    //    CUSTOMER DETAILS
+    private String senderName;
+    private String senderPhone;
+    private String senderAddress;
     private String districtCode;
     //    TIME
     private ZonedDateTime startTime;

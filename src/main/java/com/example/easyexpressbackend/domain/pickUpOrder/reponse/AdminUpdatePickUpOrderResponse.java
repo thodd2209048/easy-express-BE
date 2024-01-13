@@ -15,14 +15,15 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminUpdatePickUpOrderResponse {
+    private String orderNumber;
     private PickUpOrderStatus status;
     //    STAFF
     private HubNameAndIdResponse hub;
     private StaffIdNameResponse staff;
     //    CUSTOMER
-    private String customerName;
-    private String phone;
-    private String address;
+    private String senderName;
+    private String senderPhone;
+    private String senderAddress;
     private DistrictWithNameResponse district;
     //    TIME
     private ZonedDateTime startTime;
