@@ -16,7 +16,6 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @Builder
 public class CustomerUpdatePickUpOrderDto {
-    private PickUpOrderStatus status;
     //    sender
     private String senderName;
     private String senderPhone;
@@ -26,16 +25,12 @@ public class CustomerUpdatePickUpOrderDto {
 
     @AssertTrue
     public boolean isValidStartPickUpTime() {
-        return this.status == PickUpOrderStatus.CANCELLED || PickUpOrderUtils.isValidStartPickUpTime(this.startTime);
+        return PickUpOrderUtils.isValidStartPickUpTime(this.startTime);
     }
 
     @AssertTrue
     public boolean isValidEndPickUpTime() {
-        return this.status == PickUpOrderStatus.CANCELLED || PickUpOrderUtils.isValidEndPickUpTime(this.startTime, this.endTime);
+        return  PickUpOrderUtils.isValidEndPickUpTime(this.startTime, this.endTime);
     }
 
-    @AssertTrue
-    public boolean isValidStatus() {
-        return this.status == null || this.status == PickUpOrderStatus.CANCELLED;
-    }
 }

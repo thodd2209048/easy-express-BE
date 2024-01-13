@@ -19,7 +19,6 @@ public class AdminUpdatePickUpOrderResponse {
     private PickUpOrderStatus status;
     //    STAFF
     private HubNameAndIdResponse hub;
-    private StaffIdNameResponse staff;
     //    CUSTOMER
     private String senderName;
     private String senderPhone;

@@ -90,7 +90,6 @@ public class PickUpOrderService {
 
     public AdminUpdatePickUpOrderResponse updatePickUpOrder(Long id, AdminUpdatePickUpOrderDto updatePickUpOrderDto) {
         Hub hub = hubService.getHubById(updatePickUpOrderDto.getHubId());
-        Staff staff = staffService.getStaffById(updatePickUpOrderDto.getStaffId());
 
         PickUpOrder orderForDto = new PickUpOrder();
 
@@ -99,7 +98,7 @@ public class PickUpOrderService {
 
         PickUpOrder savedOrder = this.updatePickUpOrder(id, orderForDto);
 
-        return this.convertToAdminUpdatePickUpOrderResponse(savedOrder, hub, staff);
+        return this.convertToAdminUpdatePickUpOrderResponse(savedOrder, hub);
     }
 
     private PickUpOrder updatePickUpOrder(Long id, PickUpOrder orderForDto) {
@@ -146,20 +145,16 @@ public class PickUpOrderService {
     }
 
     private AdminUpdatePickUpOrderResponse convertToAdminUpdatePickUpOrderResponse(PickUpOrder newOrder,
-                                                                                   Hub hub,
-                                                                                   Staff staff) {
+                                                                                   Hub hub) {
         AdminUpdatePickUpOrderResponse orderResponse = mapper.toAdminUpdateOrderResponse(newOrder);
 
         HubNameAndIdResponse hubResponse = hubService.convertHubToHubNameIdResponse(hub);
 
-        StaffIdNameResponse staffResponse = staffService.convertStaffToStaffNameIdResponse(staff);
-
         String districtCode = newOrder.getDistrictCode();
         DistrictWithNameResponse districtResponse = regionService.getDistrictWithNameResponse(districtCode);
-        orderResponse.setDistrict(districtResponse);
 
+        orderResponse.setDistrict(districtResponse);
         orderResponse.setHub(hubResponse);
-        orderResponse.setStaff(staffResponse);
 
         return orderResponse;
     }

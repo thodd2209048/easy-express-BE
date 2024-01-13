@@ -23,7 +23,6 @@ public interface PickUpOrderMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "hubId", ignore = true)
-    @Mapping(target = "staffId", ignore = true)
     PickUpOrder fromAddPickUpOrderDto(AddPickUpOrderDto addPickUpOrderDto);
 
     @Mapping(target = "district", ignore = true)
@@ -31,7 +30,6 @@ public interface PickUpOrderMapper {
 
     @Mapping(target = "district", ignore = true)
     @Mapping(target = "hub", ignore = true)
-    @Mapping(target = "staff", ignore = true)
     AdminUpdatePickUpOrderResponse toAdminUpdateOrderResponse(PickUpOrder pickUpOrder);
 
     ShortPickUpOrderResponse toShortPickUpOrderResponse(PickUpOrder pickUpOrder);
@@ -39,7 +37,6 @@ public interface PickUpOrderMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "hubId", ignore = true)
-    @Mapping(target = "staffId", ignore = true)
     void updatePickUpOrder(CustomerUpdatePickUpOrderDto customerUpdatePickUpOrderDto, @MappingTarget PickUpOrder pickUpOrder);
 
     void updatePickUpOrder(AdminUpdatePickUpOrderDto adminUpdatePickUpOrderDto, @MappingTarget PickUpOrder pickUpOrder);
