@@ -1,8 +1,10 @@
 package com.example.easyexpressbackend.domain.pickUpOrder.constant;
 
 public enum PickUpOrderStatus {
-    READY_FOR_PICK_UP,
+    INFORMATION_RECEIVED,
     ASSIGNED_TO_HUB,
     PICKED_UP,
-    CANCELLED
+    CANCELLED,
+    SHIPMENT_NOT_READY,
+    EXPIRED
 }

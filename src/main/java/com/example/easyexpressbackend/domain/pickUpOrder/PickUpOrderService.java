@@ -80,7 +80,7 @@ public class PickUpOrderService {
 //        String cellAddress = locationService.getCellAddressFromAddress(order.getSenderAddress());
 
         order.setOrderNumber(number);
-        order.setStatus(PickUpOrderStatus.READY_FOR_PICK_UP);
+        order.setStatus(PickUpOrderStatus.INFORMATION_RECEIVED);
 //        ----------------------- TEST --------------------------------
         order.setCellAddress("86415d5a7ffffff");
 //        ----------------------- TEST --------------------------------
