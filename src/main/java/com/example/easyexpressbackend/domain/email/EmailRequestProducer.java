@@ -44,7 +44,7 @@ public class EmailRequestProducer {
         BaseEmailData emailData = this.getDeliveredEmailData(toEmail, shipment, lastTracking);
         amqpTemplate.convertAndSend(emailExchangeName,
                 deliveredEmailRouteKey,
-                emailData);
+                new Gson().toJson(emailData));
     }
 
     public void convertAndSendPickedUpEmail(String toEmail, Shipment shipment, Tracking lastTracking) {

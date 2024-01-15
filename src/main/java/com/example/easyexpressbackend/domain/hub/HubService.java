@@ -41,8 +41,8 @@ public class HubService {
         Optional<Hub> optionalHubName = repository.findByName(newName);
         if (optionalHubName.isPresent())
             throw new DuplicateObjectException("Hub with name: " + newName + " does exist");
-        String newLocation = addHubDto.getLocation();
-        Optional<Hub> optionalHubLocation = repository.findByLocation(newLocation);
+        String newLocation = addHubDto.getAddress();
+        Optional<Hub> optionalHubLocation = repository.findByAddress(newLocation);
         if (optionalHubLocation.isPresent())
             throw new DuplicateObjectException("Hub with location: " + newLocation + " does exist");
         Hub newHub = mapper.addHubToHub(addHubDto);
@@ -93,5 +93,10 @@ public class HubService {
         hubResponse.setDistrict(districtResponse);
 
         return hubResponse;
+    }
+
+    public Hub getHubOrNullByCellAddress(String cellAddress){
+        return repository.findByCellAddress(cellAddress)
+                .orElse(null);
     }
 }

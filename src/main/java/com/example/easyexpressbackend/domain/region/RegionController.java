@@ -1,13 +1,12 @@
 package com.example.easyexpressbackend.domain.region;
 
+import com.example.easyexpressbackend.domain.location.LocationService;
+import com.example.easyexpressbackend.domain.location.modal.Location;
 import com.example.easyexpressbackend.domain.region.response.DistrictWithNameCodeResponse;
 import com.example.easyexpressbackend.domain.region.response.NameCodeProvinceResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,16 +21,16 @@ public class RegionController {
     }
 
     @GetMapping("/provinces")
-    public List<NameCodeProvinceResponse> listProvince()  {
+    public List<NameCodeProvinceResponse> listProvince() {
         return service.listProvince();
     }
 
     @GetMapping("/districts")
-    public List<DistrictWithNameCodeResponse> listDistricts(){
+    public List<DistrictWithNameCodeResponse> listDistricts() {
         return service.listDistricts();
     }
 
-    @PostMapping({"/",""})
+    @PostMapping({"/", ""})
     public void addRegions() throws JsonProcessingException {
         service.addRegions();
     }

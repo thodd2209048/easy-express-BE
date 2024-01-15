@@ -19,6 +19,9 @@ public class Hub extends IdentityIdBaseEntity {
     @Column(unique = true)
     private String name;
     @Column(unique = true)
-    private String location;
+    private String address;
     private String districtCode;
+    private Double lat;
+    private Double lng;
+    private String cellAddress;
 }

@@ -11,6 +11,6 @@ import lombok.*;
 public class CrudHubResponse {
     private Long id;
     private String name;
-    private String location;
+    private String address;
     private DistrictWithNameCodeResponse district;
 }

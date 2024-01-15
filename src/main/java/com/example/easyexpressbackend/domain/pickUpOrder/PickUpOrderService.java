@@ -3,18 +3,19 @@ package com.example.easyexpressbackend.domain.pickUpOrder;
 import com.example.easyexpressbackend.domain.hub.Hub;
 import com.example.easyexpressbackend.domain.hub.HubService;
 import com.example.easyexpressbackend.domain.hub.response.HubNameAndIdResponse;
+import com.example.easyexpressbackend.domain.location.LocationService;
 import com.example.easyexpressbackend.domain.pickUpOrder.constant.PickUpOrderStatus;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.AddPickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.AdminUpdatePickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.CustomerUpdatePickUpOrderDto;
+import com.example.easyexpressbackend.domain.pickUpOrder.modal.PickUpOrderMessage;
+import com.example.easyexpressbackend.domain.pickUpOrder.producer.AddHubToPickUpOrderProducer;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.AdminUpdatePickUpOrderResponse;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.CustomerPickUpOrderResponse;
 import com.example.easyexpressbackend.domain.pickUpOrder.reponse.ShortPickUpOrderResponse;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
-import com.example.easyexpressbackend.domain.staff.Staff;
 import com.example.easyexpressbackend.domain.staff.StaffService;
-import com.example.easyexpressbackend.domain.staff.response.StaffIdNameResponse;
 import com.example.easyexpressbackend.exception.ActionNotAllowedException;
 import com.example.easyexpressbackend.exception.DuplicateObjectException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
@@ -33,18 +34,24 @@ public class PickUpOrderService {
     private final RegionService regionService;
     private final HubService hubService;
     private final StaffService staffService;
+    private final LocationService locationService;
+    private final AddHubToPickUpOrderProducer addHubToPickUpOrderProducer;
 
     @Autowired
     public PickUpOrderService(PickUpOrderRepository repository,
                               PickUpOrderMapper mapper,
                               RegionService regionService,
                               HubService hubService,
-                              StaffService staffService) {
+                              StaffService staffService,
+                              LocationService locationService,
+                              AddHubToPickUpOrderProducer addHubToPickUpOrderProducer) {
         this.repository = repository;
         this.mapper = mapper;
         this.regionService = regionService;
         this.hubService = hubService;
         this.staffService = staffService;
+        this.locationService = locationService;
+        this.addHubToPickUpOrderProducer = addHubToPickUpOrderProducer;
     }
 
     public Page<ShortPickUpOrderResponse> listPickUpOrders(Pageable pageable,
@@ -69,10 +76,19 @@ public class PickUpOrderService {
         PickUpOrder order = mapper.fromAddPickUpOrderDto(addPickUpOrderDto);
         String number = "ORDER_1" + RandomStringUtils.randomNumeric(11);
 
+//        Comment do dang bi loi
+//        String cellAddress = locationService.getCellAddressFromAddress(order.getSenderAddress());
+
         order.setOrderNumber(number);
         order.setStatus(PickUpOrderStatus.READY_FOR_PICK_UP);
+//        ----------------------- TEST --------------------------------
+        order.setCellAddress("86415d5a7ffffff");
+//        ----------------------- TEST --------------------------------
 
         repository.save(order);
+
+        PickUpOrderMessage orderMessage = mapper.toPickUpOrderMessage(order);
+        addHubToPickUpOrderProducer.convertAndSendRequest(orderMessage);
 
         return this.convertToCustomerPickUpOrderResponse(order);
     }
@@ -169,4 +185,6 @@ public class PickUpOrderService {
 
         return orderResponse;
     }
+
+
 }
