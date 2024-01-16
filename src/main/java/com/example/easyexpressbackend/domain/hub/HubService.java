@@ -104,11 +104,23 @@ public class HubService {
 //    }
 
     private void updateCellToHub(Hub hub){
+        String cell1Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 1);
+        String cell2Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 2);
+        String cell3Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 3);
+        String cell4Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 4);
         String cell5Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 5);
+        String cell6Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 6);
         String cell7Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 7);
+        String cell8Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 8);
 
+        hub.setCell1Address(cell1Address);
+        hub.setCell2Address(cell2Address);
+        hub.setCell3Address(cell3Address);
+        hub.setCell4Address(cell4Address);
         hub.setCell5Address(cell5Address);
+        hub.setCell6Address(cell6Address);
         hub.setCell7Address(cell7Address);
+        hub.setCell8Address(cell8Address);
 
         repository.save(hub);
     }
