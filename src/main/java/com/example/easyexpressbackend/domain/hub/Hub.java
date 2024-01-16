@@ -23,5 +23,6 @@ public class Hub extends IdentityIdBaseEntity {
     private String districtCode;
     private Double lat;
     private Double lng;
-    private String cellAddress;
+    private String cell5Address;
+    private String cell7Address;
 }

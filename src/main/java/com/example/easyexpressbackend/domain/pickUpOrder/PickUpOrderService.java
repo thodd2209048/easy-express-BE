@@ -81,9 +81,6 @@ public class PickUpOrderService {
 
         order.setOrderNumber(number);
         order.setStatus(PickUpOrderStatus.INFORMATION_RECEIVED);
-//        ----------------------- TEST --------------------------------
-        order.setCellAddress("86415d5a7ffffff");
-//        ----------------------- TEST --------------------------------
 
         repository.save(order);
 

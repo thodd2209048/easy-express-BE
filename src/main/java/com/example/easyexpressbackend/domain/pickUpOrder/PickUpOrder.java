@@ -27,7 +27,6 @@ public class PickUpOrder extends IdentityIdBaseEntity {
     private String senderPhone;
     private String senderAddress;
     private String districtCode;
-    private String cellAddress;
     //    TIME
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;

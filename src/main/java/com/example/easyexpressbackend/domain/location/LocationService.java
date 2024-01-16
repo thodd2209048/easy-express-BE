@@ -19,7 +19,6 @@ import java.util.List;
 public class LocationService {
     private final RestTemplate restTemplate;
     private final H3Core h3;
-    private final HubService hubService;
 
     @Value("${google.api.key}")
     private String geocodeKey;
@@ -31,11 +30,9 @@ public class LocationService {
 
     @Autowired
     public LocationService(RestTemplate restTemplate,
-                           H3Core h3,
-                           HubService hubService) {
+                           H3Core h3) {
         this.restTemplate = restTemplate;
         this.h3 = h3;
-        this.hubService = hubService;
     }
 
     @SneakyThrows
@@ -51,33 +48,14 @@ public class LocationService {
         return results.getResults().get(0).getGeometry().getViewport().getNortheast();
     }
 
-    public String getCellAddressFromAddress(String address) {
+    public String getCellAddressFromAddress(String address, Integer resolution) {
         Location location = this.getLocationFromAddress(address);
-        return h3.latLngToCellAddress(location.getLat(), location.getLng(), 6);
+        return h3.latLngToCellAddress(location.getLat(), location.getLng(), resolution);
     }
 
-//    private String getCellFromLatLng(Double lat, Double lng) {
-//        return h3.latLngToCellAddress(lat, lng, res);
-//    }
-
-
-//    private Hub getHubInCell(String cellAddress) {
-//        return hubService.getHubOrNullByCellAddress(cellAddress);
-//    }
-
-//    public Hub findHubNearest(String cellOrigin) {
-//        Integer k = 0;
-//        while (true) {
-//            List<String> cells = h3.gridDisk(cellOrigin, k);
-//            for (String cell : cells
-//            ) {
-//                Hub hub = this.getHubInCell(cell);
-//                if (hub != null) return hub;
-//            }
-//            k++;
-//        }
-//    }
-
+    public String getCellAddressFromLatLng(Double lat, Double lng, Integer resolution) {
+        return h3.latLngToCellAddress(lat, lng, resolution);
+    }
 
 }
 

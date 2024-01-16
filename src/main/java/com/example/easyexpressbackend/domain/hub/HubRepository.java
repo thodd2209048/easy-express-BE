@@ -17,5 +17,6 @@ public interface HubRepository extends JpaRepository<Hub, Long> {
     @Query(" SELECT h FROM Hub h WHERE (:searchTerm IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) ")
     Page<Hub> findAllAndSearch(Pageable pageable, String searchTerm);
 
-    Optional<Hub> findByCellAddress(String cellAddress);
+    Optional<Hub> findByCell5Address(String cellAddress);
+    Optional<Hub> findByCell7Address(String cellAddress);
 }

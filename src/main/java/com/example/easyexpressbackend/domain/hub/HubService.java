@@ -1,6 +1,7 @@
 package com.example.easyexpressbackend.domain.hub;
 
 import com.example.easyexpressbackend.domain.hub.dto.AddHubDto;
+import com.example.easyexpressbackend.domain.location.LocationService;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.hub.dto.UpdateHubDto;
 import com.example.easyexpressbackend.domain.region.response.DistrictWithNameCodeResponse;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,16 +22,17 @@ public class HubService {
     private final HubRepository repository;
     private final HubMapper mapper;
     private final RegionService regionService;
+    private final LocationService locationService;
 
 
     @Autowired
     public HubService(HubRepository repository,
                       HubMapper mapper,
-                      RegionService regionService) {
+                      RegionService regionService, LocationService locationService) {
         this.repository = repository;
         this.mapper = mapper;
         this.regionService = regionService;
-
+        this.locationService = locationService;
     }
 
     public Page<CrudHubResponse> listHub(Pageable pageable, String searchTerm) {
@@ -95,8 +98,26 @@ public class HubService {
         return hubResponse;
     }
 
-    public Hub getHubOrNullByCellAddress(String cellAddress){
-        return repository.findByCellAddress(cellAddress)
-                .orElse(null);
+//    public Hub getHubOrNullByCellAddress(String cellAddress){
+//        return repository.findByCell5Address(cellAddress)
+//                .orElse(null);
+//    }
+
+    private void updateCellToHub(Hub hub){
+        String cell5Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 5);
+        String cell7Address = locationService.getCellAddressFromLatLng(hub.getLat(), hub.getLng(), 7);
+
+        hub.setCell5Address(cell5Address);
+        hub.setCell7Address(cell7Address);
+
+        repository.save(hub);
+    }
+
+    public void updateCellToAllHub(){
+        List<Hub> hubs = repository.findAll();
+        for (Hub hub: hubs
+             ) {
+            this.updateCellToHub(hub);
+        }
     }
 }
