@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LocationService {
@@ -38,14 +40,19 @@ public class LocationService {
     @SneakyThrows
     public Location getLocationFromAddress(String stringAddress) {
         String baseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
-        String address = URLEncoder.encode(stringAddress, StandardCharsets.UTF_8);
-        String url = baseUrl + "?address=" + address + "&key=" + this.geocodeKey;
+        String url = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam("address", "{address}")
+                .queryParam("key", "{key}")
+                .encode()
+                .toUriString();
 
-        GeocodeResults results = restTemplate.getForObject(url, GeocodeResults.class);
-        String stringResult = restTemplate.getForObject(url, String.class);
-        System.out.println(stringResult);
-//        assert !results.getResults().isEmpty();
-        return results.getResults().get(0).getGeometry().getViewport().getNortheast();
+        Map<String, String> params = Map.of("address", stringAddress, "key", geocodeKey);
+
+        GeocodeResults geocodeResults = restTemplate.getForObject(url, GeocodeResults.class, params);
+
+        if (geocodeResults.getResults().isEmpty())
+            throw new RuntimeException("Can not find lat lng for address: " + stringAddress + ".");
+        return geocodeResults.getResults().get(0).getGeometry().getViewport().getNortheast();
     }
 
     public String getCellAddressFromAddress(String address, Integer resolution) {

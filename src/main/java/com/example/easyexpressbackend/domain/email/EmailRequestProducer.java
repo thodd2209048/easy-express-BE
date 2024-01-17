@@ -90,7 +90,7 @@ public class EmailRequestProducer {
                     "Tracking with id: "+ lastTracking.getId()+ " is not the last tracking of shipment " + shipmentNumber);
 
         String districtCode = lastTracking.getDistrictCode();
-        DistrictWithNameResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(districtCode);
+        DistrictWithNameResponse districtResponse = regionService.districtToDistrictWithNameResponse(districtCode);
         String districtName = districtResponse.getName();
         String provinceName = districtResponse.getProvince().getName();
 

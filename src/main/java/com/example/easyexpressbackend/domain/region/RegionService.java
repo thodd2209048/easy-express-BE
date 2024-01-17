@@ -118,7 +118,7 @@ public class RegionService {
     }
 
 
-    public DistrictWithNameResponse districtToDistrictNameAndProvinceResponse(String districtCode) {
+    public DistrictWithNameResponse districtToDistrictWithNameResponse(String districtCode) {
         District district = this.getDistrictByCode(districtCode);
         DistrictWithNameResponse districtResponse = mapper.districtToDistrictWithNameResponse(district);
 

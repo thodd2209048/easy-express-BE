@@ -1,6 +1,7 @@
-package com.example.easyexpressbackend.domain.shipment.response;
+package com.example.easyexpressbackend.domain.shipment.response.withDistrict;
 
 import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.BaseShipmentWithDistrictResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class AddShipmentResponse extends BaseShipmentWithDistrictResponse{
+public class AddShipmentResponse extends BaseShipmentWithDistrictResponse {
     private Long id;
     private String number;
     //    FROM

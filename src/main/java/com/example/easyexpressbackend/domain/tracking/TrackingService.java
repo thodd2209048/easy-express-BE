@@ -16,7 +16,7 @@ import com.example.easyexpressbackend.domain.tracking.response.TrackingPublicRes
 import com.example.easyexpressbackend.exception.ActionNotAllowedException;
 import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
-import com.example.easyexpressbackend.domain.shipment.response.ShipmentPublicResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.ShipmentPublicResponse;
 import com.example.easyexpressbackend.domain.email.EmailRequestProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,7 +180,7 @@ public class TrackingService {
     private TrackingPublicResponse convertToSubTrackingPublicResponse(Tracking tracking) {
         TrackingPublicResponse trackingResponse = trackingMapper.trackingToTrackingPublicResponse(tracking);
 
-        DistrictWithNameResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(tracking.getDistrictCode());
+        DistrictWithNameResponse districtResponse = regionService.districtToDistrictWithNameResponse(tracking.getDistrictCode());
 
         trackingResponse.setDistrict(districtResponse);
 
