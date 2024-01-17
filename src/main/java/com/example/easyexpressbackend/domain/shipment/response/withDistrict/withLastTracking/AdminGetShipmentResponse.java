@@ -1,6 +1,7 @@
-package com.example.easyexpressbackend.domain.shipment.response;
+package com.example.easyexpressbackend.domain.shipment.response.withDistrict.withLastTracking;
 
-import com.example.easyexpressbackend.domain.tracking.response.TrackingInListShipmentResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.withLastTracking.ShipmentWithDistrictAndLastTrackingResponse;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListShipmentResponse {
+public class AdminGetShipmentResponse extends ShipmentWithDistrictAndLastTrackingResponse {
     private Long id;
     private String number;
     //    FROM
@@ -20,13 +21,13 @@ public class ListShipmentResponse {
     private String receiverPhone;
     private String receiverAddress;
     //    SHIPMENT DETAILS
-    private Double valueInDollar;
+    @Column(columnDefinition = "text")
     private String description;
+    private Double valueInDollar;
     private Double weightInKg;
     private Double lengthInCm;
     private Double widthInCm;
     private Double heightInCm;
-    // FURTHER
-    private TrackingInListShipmentResponse lastTracking;
+    //  FURTHER
     private String newNumber;
 }

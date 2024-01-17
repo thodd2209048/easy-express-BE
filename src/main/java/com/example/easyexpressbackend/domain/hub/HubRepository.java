@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface HubRepository extends JpaRepository<Hub, Long> {
     Optional<Hub> findByName(String name);
 
-    Optional<Hub> findByLocation(String location);
+    Optional<Hub> findByAddress(String address);
 
     @Query(" SELECT h FROM Hub h WHERE (:searchTerm IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) ")
     Page<Hub> findAllAndSearch(Pageable pageable, String searchTerm);

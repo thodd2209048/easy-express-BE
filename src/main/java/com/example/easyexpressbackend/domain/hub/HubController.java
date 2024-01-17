@@ -56,4 +56,9 @@ public class HubController {
     public void deleteHub(@PathVariable Long id){
         service.deleteHub(id);
     }
+
+    @PostMapping("/cellToHubs")
+    public void addCellToHubs(){
+        service.updateCellToAllHub();
+    }
 }

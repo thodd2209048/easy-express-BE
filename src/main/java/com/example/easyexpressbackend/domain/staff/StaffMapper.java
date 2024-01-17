@@ -3,7 +3,7 @@ package com.example.easyexpressbackend.domain.staff;
 import com.example.easyexpressbackend.domain.staff.dto.AddStaffDto;
 import com.example.easyexpressbackend.domain.staff.response.CrudStaffResponse;
 import com.example.easyexpressbackend.domain.staff.dto.UpdateStaffDto;
-import com.example.easyexpressbackend.domain.staff.response.StaffInListShipmentResponse;
+import com.example.easyexpressbackend.domain.staff.response.StaffIdNameResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -23,7 +23,7 @@ public interface StaffMapper {
     @Mapping(target = "hubName", ignore = true)
     CrudStaffResponse staffToCrudStaffResponse(Staff staff);
 
-    StaffInListShipmentResponse staffToStaffInListShipmentResponse(Staff staff);
+    StaffIdNameResponse staffToStaffIdNameResponse(Staff staff);
 
     Staff copy(Staff staff);
 

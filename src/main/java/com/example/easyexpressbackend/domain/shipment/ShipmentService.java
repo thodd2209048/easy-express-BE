@@ -1,17 +1,20 @@
 package com.example.easyexpressbackend.domain.shipment;
 
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.shipment.dto.AddShipmentDto;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.AddShipmentResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.BaseShipmentWithDistrictResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.ShipmentPublicResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.withLastTracking.AdminGetShipmentResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withoutDistrict.ListShipmentResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.withLastTracking.ShipmentWithDistrictAndLastTrackingResponse;
+import com.example.easyexpressbackend.domain.shipment.response.withoutDistrict.ShipmentWithLastTrackingResponse;
 import com.example.easyexpressbackend.domain.tracking.Tracking;
-import com.example.easyexpressbackend.domain.shipment.response.BaseShipmentWithDistrictResponse;
-import com.example.easyexpressbackend.domain.shipment.response.ListShipmentResponse;
-import com.example.easyexpressbackend.domain.shipment.response.ShipmentPublicResponse;
 import com.example.easyexpressbackend.domain.tracking.TrackingService;
 import com.example.easyexpressbackend.domain.tracking.response.TrackingInListShipmentResponse;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
-import com.example.easyexpressbackend.domain.shipment.response.AddShipmentResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,6 +62,11 @@ public class ShipmentService {
                         "Shipment with number: " + number + " does not exist"));
     }
 
+    public AdminGetShipmentResponse getShipmentForAdmin(String number) {
+        Shipment shipment = this.getShipment(number);
+        return this.convertShipmentToAdminGetShipmentResponse(shipment);
+    }
+
     public AddShipmentResponse addShipment(AddShipmentDto addShipmentDto) {
         Shipment shipment = shipmentMapper.addShipmentToShipment(addShipmentDto);
 
@@ -100,10 +108,15 @@ public class ShipmentService {
     private ListShipmentResponse convertShipmentToListShipmentResponse(Shipment shipment) {
         ListShipmentResponse shipmentResponse = shipmentMapper.shipmentToListShipmentResponse(shipment);
 
-        Tracking lastTracking = trackingService.getTracking(shipment.getLastTrackingId());
-        TrackingInListShipmentResponse lastTrackingResponse = trackingService.convertTrackingToTrackingInListShipmentResponse(lastTracking);
+        this.setDistrictsAndLastTracking(shipmentResponse, shipment);
 
-        shipmentResponse.setLastTracking(lastTrackingResponse);
+        return shipmentResponse;
+    }
+
+    private AdminGetShipmentResponse convertShipmentToAdminGetShipmentResponse(Shipment shipment) {
+        AdminGetShipmentResponse shipmentResponse = shipmentMapper.shipmentToAdminGetShipmentResponse(shipment);
+
+        this.setDistrictsAndLastTracking(shipmentResponse, shipment);
 
         return shipmentResponse;
     }
@@ -119,14 +132,31 @@ public class ShipmentService {
 
     private void setDistricts(BaseShipmentWithDistrictResponse response, Shipment shipment ) {
         String senderDistrictCode = shipment.getSenderDistrictCode();
-        DistrictNameAndProvinceResponse senderDistrictResponse =
-                regionService.districtToDistrictNameAndProvinceResponse(senderDistrictCode);
+        DistrictWithNameResponse senderDistrictResponse =
+                regionService.districtToDistrictWithNameResponse(senderDistrictCode);
 
         String receiverDistrictCode = shipment.getReceiverDistrictCode();
-        DistrictNameAndProvinceResponse receiverDistrictResponse =
-                regionService.districtToDistrictNameAndProvinceResponse(receiverDistrictCode);
+        DistrictWithNameResponse receiverDistrictResponse =
+                regionService.districtToDistrictWithNameResponse(receiverDistrictCode);
 
         response.setSenderDistrict(senderDistrictResponse);
         response.setReceiverDistrict(receiverDistrictResponse);
     }
+
+    private void setDistrictsAndLastTracking(ShipmentWithDistrictAndLastTrackingResponse response, Shipment shipment){
+        this.setDistricts(response, shipment);
+
+        Tracking lastTracking = trackingService.getTracking(shipment.getLastTrackingId());
+        TrackingInListShipmentResponse lastTrackingResponse = trackingService.convertTrackingToTrackingInListShipmentResponse(lastTracking);
+
+        response.setLastTracking(lastTrackingResponse);
+    }
+
+    private void setLastTracking(ShipmentWithLastTrackingResponse response, Shipment shipment){
+        Tracking lastTracking = trackingService.getTracking(shipment.getLastTrackingId());
+        TrackingInListShipmentResponse lastTrackingResponse = trackingService.convertTrackingToTrackingInListShipmentResponse(lastTracking);
+
+        response.setLastTracking(lastTrackingResponse);
+    }
+
 }

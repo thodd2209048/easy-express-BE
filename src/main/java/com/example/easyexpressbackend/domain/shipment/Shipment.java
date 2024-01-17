@@ -10,24 +10,24 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 public class Shipment extends IdentityIdBaseEntity {
     private String number;
-//    FROM
+    //    FROM
     private String senderName;
     private String senderPhone;
     private String senderAddress;
     private String senderDistrictCode;
-//    TO
+    //    TO
     private String receiverName;
     private String receiverPhone;
     private String receiverAddress;
     private String receiverDistrictCode;
-//    SHIPMENT DETAILS
+    //    SHIPMENT DETAILS
     @Column(columnDefinition = "text")
     private String description;
     private Double valueInDollar;
@@ -35,7 +35,7 @@ public class Shipment extends IdentityIdBaseEntity {
     private Double lengthInCm;
     private Double widthInCm;
     private Double heightInCm;
-//  FURTHER
+    //  FURTHER
     private Long lastTrackingId;
     private String newNumber;
 }

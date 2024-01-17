@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.domain.tracking;
 
+import com.example.easyexpressbackend.domain.region.response.DistrictWithNameResponse;
 import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import com.example.easyexpressbackend.domain.hub.Hub;
 import com.example.easyexpressbackend.domain.hub.HubService;
@@ -15,13 +16,13 @@ import com.example.easyexpressbackend.domain.tracking.response.TrackingPublicRes
 import com.example.easyexpressbackend.exception.ActionNotAllowedException;
 import com.example.easyexpressbackend.exception.InvalidValueException;
 import com.example.easyexpressbackend.exception.ObjectNotFoundException;
-import com.example.easyexpressbackend.domain.region.response.DistrictNameAndProvinceResponse;
-import com.example.easyexpressbackend.domain.shipment.response.ShipmentPublicResponse;
-import com.example.easyexpressbackend.domain.email.rabbitMq.DeliveredEmailRequestProducer;
+import com.example.easyexpressbackend.domain.shipment.response.withDistrict.ShipmentPublicResponse;
+import com.example.easyexpressbackend.domain.email.EmailRequestProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class TrackingService {
     private final RegionService regionService;
     private final StaffService staffService;
     private final HubService hubService;
-    private final DeliveredEmailRequestProducer deliveredEmailRequestProducer;
+    private final EmailRequestProducer emailRequestProducer;
 
 
     @Value("${defaultEmail}")
@@ -46,14 +47,14 @@ public class TrackingService {
                            RegionService regionService,
                            StaffService staffService,
                            HubService hubService,
-                           DeliveredEmailRequestProducer deliveredEmailRequestProducer) {
+                           EmailRequestProducer emailRequestProducer) {
         this.trackingRepository = trackingRepository;
         this.trackingMapper = trackingMapper;
         this.shipmentService = shipmentService;
         this.regionService = regionService;
         this.staffService = staffService;
         this.hubService = hubService;
-        this.deliveredEmailRequestProducer = deliveredEmailRequestProducer;
+        this.emailRequestProducer = emailRequestProducer;
     }
 
     public TrackingAShipmentResponse trackingAShipment(String shipmentNumber) {
@@ -90,6 +91,7 @@ public class TrackingService {
         return trackingRepository.save(tracking);
     }
 
+    @Transactional
     public TrackingPrivateResponse addTrackingContinued(AddTrackingDto addTrackingDto) {
         Long startTime = System.currentTimeMillis();
         Shipment shipment = shipmentService.getShipment(addTrackingDto.getShipmentNumber());
@@ -109,9 +111,9 @@ public class TrackingService {
 
         System.out.println("Update shipment: " + (System.currentTimeMillis() - startTime));
         if (tracking.getShipmentStatus() == ShipmentStatus.DELIVERED) {
-            deliveredEmailRequestProducer.convertAndSendDeliveredEmail(toEmail, shipment, tracking);
+            emailRequestProducer.convertAndSendDeliveredEmail(toEmail, shipment, tracking);
         } else if(tracking.getShipmentStatus() == ShipmentStatus.PICKED_UP){
-            deliveredEmailRequestProducer.convertAndSendPickedUpEmail(toEmail, shipment, tracking);
+            emailRequestProducer.convertAndSendPickedUpEmail(toEmail, shipment, tracking);
         }
         System.out.println("Send email: " + (System.currentTimeMillis() - startTime));
         return trackingMapper.trackingToTrackingPrivateResponse(tracking);
@@ -168,7 +170,7 @@ public class TrackingService {
         TrackingInListShipmentResponse trackingResponse = trackingMapper.trackingToTrackingInListShipmentResponse(tracking);
 
         Hub hub = hubService.getHubById(tracking.getHubId());
-        HubNameAndIdResponse hubResponse = hubService.convertHubToHubInListShipmentResponse(hub);
+        HubNameAndIdResponse hubResponse = hubService.convertHubToHubNameIdResponse(hub);
 
         trackingResponse.setHub(hubResponse);
 
@@ -178,7 +180,7 @@ public class TrackingService {
     private TrackingPublicResponse convertToSubTrackingPublicResponse(Tracking tracking) {
         TrackingPublicResponse trackingResponse = trackingMapper.trackingToTrackingPublicResponse(tracking);
 
-        DistrictNameAndProvinceResponse districtResponse = regionService.districtToDistrictNameAndProvinceResponse(tracking.getDistrictCode());
+        DistrictWithNameResponse districtResponse = regionService.districtToDistrictWithNameResponse(tracking.getDistrictCode());
 
         trackingResponse.setDistrict(districtResponse);
 

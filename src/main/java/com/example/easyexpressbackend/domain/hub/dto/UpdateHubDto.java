@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UpdateHubDto {
         private String name;
-        private String location;
+        private String address;
         private String districtCode;
 }
