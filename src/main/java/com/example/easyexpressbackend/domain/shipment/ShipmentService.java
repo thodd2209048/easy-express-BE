@@ -108,7 +108,7 @@ public class ShipmentService {
     private ListShipmentResponse convertShipmentToListShipmentResponse(Shipment shipment) {
         ListShipmentResponse shipmentResponse = shipmentMapper.shipmentToListShipmentResponse(shipment);
 
-        this.setDistrictsAndLastTracking(shipmentResponse, shipment);
+        this.setLastTracking(shipmentResponse, shipment);
 
         return shipmentResponse;
     }

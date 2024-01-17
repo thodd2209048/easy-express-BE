@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.domain.hub;
 
+import com.example.easyexpressbackend.config.MapstructConfig;
 import com.example.easyexpressbackend.domain.hub.dto.AddHubDto;
 import com.example.easyexpressbackend.domain.hub.dto.UpdateHubDto;
 import com.example.easyexpressbackend.domain.hub.response.CrudHubResponse;
@@ -10,7 +11,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(config = MapstructConfig.class)
 public interface HubMapper {
     HubMapper INSTANCE = Mappers.getMapper(HubMapper.class);
 

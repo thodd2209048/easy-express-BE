@@ -174,12 +174,6 @@ public class PickUpOrderService {
 
     private ShortPickUpOrderResponse convertToShortPickUpOrderResponse(PickUpOrder pickUpOrder) {
         ShortPickUpOrderResponse orderResponse = mapper.toShortPickUpOrderResponse(pickUpOrder);
-
-        String districtCode = pickUpOrder.getDistrictCode();
-        DistrictWithNameResponse districtResponse = regionService.getDistrictWithNameResponse(districtCode);
-
-        orderResponse.setDistrict(districtResponse);
-
         return orderResponse;
     }
 

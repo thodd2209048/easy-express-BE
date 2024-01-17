@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListShipmentResponse extends ShipmentWithDistrictAndLastTrackingResponse {
+public class ListShipmentResponse extends ShipmentWithLastTrackingResponse {
     private Long id;
     private String number;
+    private String senderDistrictCode;
+    private String receiverDistrictCode;
     private String newNumber;
 }

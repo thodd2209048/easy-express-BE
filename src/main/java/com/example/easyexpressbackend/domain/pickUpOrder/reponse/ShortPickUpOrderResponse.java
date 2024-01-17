@@ -15,7 +15,7 @@ public class ShortPickUpOrderResponse {
     private Long id;
     private String orderNumber;
     private PickUpOrderStatus status;
-    private DistrictWithNameResponse district;
+    private String districtCode;
     //    TIME
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
