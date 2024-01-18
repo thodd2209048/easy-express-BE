@@ -30,7 +30,7 @@ public class ShipmentController {
             @RequestParam(required = false) ShipmentStatus shipmentStatus,
             @RequestParam(required = false) ZonedDateTime startDateTime
             ){
-        return service.listShipments(pageable, hubId, shipmentStatus, startDateTime);
+        return service.listShipmentsForAdmin(pageable, hubId, shipmentStatus, startDateTime);
     }
 
     @GetMapping("/{number}")

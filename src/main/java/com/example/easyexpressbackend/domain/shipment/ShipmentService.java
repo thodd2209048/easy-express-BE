@@ -4,6 +4,7 @@ import com.example.easyexpressbackend.domain.region.response.DistrictWithNameRes
 import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import com.example.easyexpressbackend.domain.region.RegionService;
 import com.example.easyexpressbackend.domain.shipment.dto.AddShipmentDto;
+import com.example.easyexpressbackend.domain.shipment.response.ShortCustomerShipmentResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withDistrict.AddShipmentResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withDistrict.BaseShipmentWithDistrictResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withDistrict.ShipmentPublicResponse;
@@ -46,14 +47,26 @@ public class ShipmentService {
     }
 
     //    ---------- CRUD SHIPMENT ----------
-    public Page<ListShipmentResponse> listShipments(Pageable pageable,
-                                                    Long hubId,
-                                                    ShipmentStatus status,
-                                                    ZonedDateTime startDateTime) {
+    public Page<Shipment> listShipments(Pageable pageable,
+                                                            Long hubId,
+                                                            ShipmentStatus status,
+                                                            ZonedDateTime startDateTime) {
         ZonedDateTime endDateTime = startDateTime == null ? null : startDateTime.plusHours(24);
         return shipmentRepository.findShipmentsFilterByHubIdAndStatusAndDateTime(
-                        pageable, hubId, status, startDateTime, endDateTime)
+                        pageable, hubId, status, startDateTime, endDateTime);
+    }
+    public Page<ListShipmentResponse> listShipmentsForAdmin(Pageable pageable,
+                                                            Long hubId,
+                                                            ShipmentStatus status,
+                                                            ZonedDateTime startDateTime) {
+        return this.listShipments(pageable, hubId, status, startDateTime)
                 .map(this::convertShipmentToListShipmentResponse);
+    }
+
+    public Page<ShortCustomerShipmentResponse> listShipmentsForCustomer(Pageable pageable,
+                                                                        ZonedDateTime startDateTime) {
+        return this.listShipments(pageable, null, null, startDateTime)
+                .map(shipmentMapper::shipmentToShortCustomerShipmentResponse);
     }
 
     public Shipment getShipment(String number) {

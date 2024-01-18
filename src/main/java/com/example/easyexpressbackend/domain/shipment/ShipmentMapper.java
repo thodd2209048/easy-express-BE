@@ -2,6 +2,7 @@ package com.example.easyexpressbackend.domain.shipment;
 
 import com.example.easyexpressbackend.config.MapstructConfig;
 import com.example.easyexpressbackend.domain.shipment.dto.AddShipmentDto;
+import com.example.easyexpressbackend.domain.shipment.response.ShortCustomerShipmentResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withDistrict.AddShipmentResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withDistrict.withLastTracking.AdminGetShipmentResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withoutDistrict.ListShipmentResponse;
@@ -29,6 +30,8 @@ public interface ShipmentMapper {
     ListShipmentResponse shipmentToListShipmentResponse(Shipment shipment);
 
     AdminGetShipmentResponse shipmentToAdminGetShipmentResponse(Shipment shipment);
+
+    ShortCustomerShipmentResponse shipmentToShortCustomerShipmentResponse(Shipment shipment);
 
     @Mapping(target = "senderDistrict", ignore = true)
     @Mapping(target = "receiverDistrict", ignore = true)
