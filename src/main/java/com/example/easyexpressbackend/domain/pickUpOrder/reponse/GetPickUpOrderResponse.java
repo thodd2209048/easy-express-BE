@@ -11,14 +11,21 @@ import java.time.ZonedDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShortPickUpOrderResponse {
-    private Long id;
+public class GetPickUpOrderResponse {
     private String orderNumber;
     private PickUpOrderStatus status;
-    private String districtCode;
+    //    CUSTOMER
+    private String senderName;
+    private String senderPhone;
+    private String senderAddress;
+    private DistrictWithNameResponse district;
     //    TIME
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
     //    SHIPMENT
     private String description;
+    private Double weightInKg;
+    private Double lengthInCm;
+    private Double widthInCm;
+    private Double heightInCm;
 }

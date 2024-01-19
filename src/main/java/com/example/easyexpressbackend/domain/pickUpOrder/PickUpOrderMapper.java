@@ -4,10 +4,9 @@ import com.example.easyexpressbackend.config.MapstructConfig;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.AddPickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.AdminUpdatePickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.dto.CustomerUpdatePickUpOrderDto;
+import com.example.easyexpressbackend.domain.pickUpOrder.dto.StaffUpdatePickUpOrderDto;
 import com.example.easyexpressbackend.domain.pickUpOrder.modal.PickUpOrderMessage;
-import com.example.easyexpressbackend.domain.pickUpOrder.reponse.AdminUpdatePickUpOrderResponse;
-import com.example.easyexpressbackend.domain.pickUpOrder.reponse.CustomerPickUpOrderResponse;
-import com.example.easyexpressbackend.domain.pickUpOrder.reponse.ShortPickUpOrderResponse;
+import com.example.easyexpressbackend.domain.pickUpOrder.reponse.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -27,13 +26,15 @@ public interface PickUpOrderMapper {
     PickUpOrder fromAddPickUpOrderDto(AddPickUpOrderDto addPickUpOrderDto);
 
     @Mapping(target = "district", ignore = true)
-    CustomerPickUpOrderResponse toCustomerPickUpOrderResponse(PickUpOrder pickUpOrder);
+    GetPickUpOrderResponse toGetPickUpOrderResponse(PickUpOrder pickUpOrder);
 
     @Mapping(target = "district", ignore = true)
     @Mapping(target = "hub", ignore = true)
     AdminUpdatePickUpOrderResponse toAdminUpdateOrderResponse(PickUpOrder pickUpOrder);
 
-    ShortPickUpOrderResponse toShortPickUpOrderResponse(PickUpOrder pickUpOrder);
+    ShortPickUpOrderForCustomerResponse toShortPickUpOrderForCustomerResponse(PickUpOrder pickUpOrder);
+    ShortPickUpOrderForAdminResponse toShortPickUpOrderForAdminResponse(PickUpOrder pickUpOrder);
+    StaffUpdatePickUpOrderResponse toStaffUpdatePickUpOrderResponse(PickUpOrder pickUpOrder);
 
     PickUpOrderMessage toPickUpOrderMessage(PickUpOrder pickUpOrder);
 
@@ -46,5 +47,5 @@ public interface PickUpOrderMapper {
 
     void updatePickUpOrder(PickUpOrder newOrder,@MappingTarget PickUpOrder currentOrder);
 
-
+    void updatePickUpOrder(StaffUpdatePickUpOrderDto staffUpdatePickUpOrderDto, @MappingTarget PickUpOrder pickUpOrder);
 }

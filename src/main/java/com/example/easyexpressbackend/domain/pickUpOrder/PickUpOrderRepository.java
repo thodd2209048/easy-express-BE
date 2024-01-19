@@ -17,10 +17,12 @@ public interface PickUpOrderRepository extends JpaRepository<PickUpOrder, Long> 
 
     @Query( value = " SELECT o FROM PickUpOrder o " +
             " WHERE (:status IS NULL OR o.status = :status) " +
+            " AND (:hubId IS NULL OR o.hubId = :hubId) " +
             " AND (cast(:startTime AS timestamp) IS NULL " +
             " OR (o.startTime > :startTime AND o.startTime < :endTime)) ")
     Page<PickUpOrder> getPickUpOrderByCondition(Pageable pageable,
                                                 PickUpOrderStatus status,
+                                                Long hubId,
                                                 ZonedDateTime startTime,
                                                 ZonedDateTime endTime);
 }
