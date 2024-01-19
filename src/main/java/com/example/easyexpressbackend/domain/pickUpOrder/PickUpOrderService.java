@@ -20,9 +20,13 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -117,18 +121,6 @@ public class PickUpOrderService {
         return mapper.toGetPickUpOrderResponse(savedOrder);
     }
 
-    public AdminUpdatePickUpOrderResponse updatePickUpOrder(Long id, AdminUpdatePickUpOrderDto updatePickUpOrderDto) {
-        Hub hub = hubService.getHubById(updatePickUpOrderDto.getHubId());
-
-        PickUpOrder orderForDto = new PickUpOrder();
-
-        mapper.updatePickUpOrder(updatePickUpOrderDto, orderForDto);
-
-        PickUpOrder savedOrder = this.updatePickUpOrder(id, orderForDto);
-
-        return this.convertToAdminUpdatePickUpOrderResponse(savedOrder, hub);
-    }
-
     private PickUpOrder updatePickUpOrder(Long id, PickUpOrder orderForDto) {
         PickUpOrder currentOrder = this.getOrder(id);
 
@@ -175,21 +167,6 @@ public class PickUpOrderService {
                 .orElseThrow(() -> new ObjectNotFoundException("Pick up order with id: " + id + " does not exist."));
     }
 
-    private AdminUpdatePickUpOrderResponse convertToAdminUpdatePickUpOrderResponse(PickUpOrder newOrder,
-                                                                                   Hub hub) {
-        AdminUpdatePickUpOrderResponse orderResponse = mapper.toAdminUpdateOrderResponse(newOrder);
-
-        HubNameAndIdResponse hubResponse = hubService.convertHubToHubNameIdResponse(hub);
-
-        String districtCode = newOrder.getDistrictCode();
-        DistrictWithNameResponse districtResponse = regionService.getDistrictWithNameResponse(districtCode);
-
-        orderResponse.setDistrict(districtResponse);
-        orderResponse.setHub(hubResponse);
-
-        return orderResponse;
-    }
-
     private ShortPickUpOrderForCustomerResponse convertToShortPickUpOrderForCustomerResponse(PickUpOrder pickUpOrder) {
         return mapper.toShortPickUpOrderForCustomerResponse(pickUpOrder);
     }
@@ -205,4 +182,33 @@ public class PickUpOrderService {
 
         return mapper.toGetPickUpOrderResponse(currentOrder);
     }
+
+    @Scheduled(cron = "0 0 1 * * *")
+    private void updateStatusToExpired(){
+        List<PickUpOrder> yesterdayIncompleteOrders = this.getIncompleteOrdersYesterday();
+        for (PickUpOrder order: yesterdayIncompleteOrders
+             ) {
+            order.setStatus(PickUpOrderStatus.EXPIRED);
+        }
+
+        repository.saveAll(yesterdayIncompleteOrders);
+    }
+
+    private List<PickUpOrder> getIncompleteOrdersYesterday(){
+        List<PickUpOrderStatus> waitingToPickUpStatuses = List.of(PickUpOrderStatus.INFORMATION_RECEIVED, PickUpOrderStatus.ASSIGNED_TO_HUB);
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime atEndOfYesterday = now.withHour(0).withMinute(0).withSecond(0);
+        ZonedDateTime atStartOfYesterday = atEndOfYesterday.minusHours(24);
+
+
+        List<PickUpOrder> yesterdayIncompleteOrders = new ArrayList<>();
+        for (PickUpOrderStatus status: waitingToPickUpStatuses
+        ) {
+            yesterdayIncompleteOrders.addAll(
+                    repository.findByStatusAndStartTimeBetween(status, atStartOfYesterday, atEndOfYesterday));
+        }
+        return yesterdayIncompleteOrders;
+    }
+
+
 }

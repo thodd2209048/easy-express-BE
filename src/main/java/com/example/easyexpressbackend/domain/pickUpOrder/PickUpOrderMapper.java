@@ -28,10 +28,6 @@ public interface PickUpOrderMapper {
     @Mapping(target = "district", ignore = true)
     GetPickUpOrderResponse toGetPickUpOrderResponse(PickUpOrder pickUpOrder);
 
-    @Mapping(target = "district", ignore = true)
-    @Mapping(target = "hub", ignore = true)
-    AdminUpdatePickUpOrderResponse toAdminUpdateOrderResponse(PickUpOrder pickUpOrder);
-
     ShortPickUpOrderForCustomerResponse toShortPickUpOrderForCustomerResponse(PickUpOrder pickUpOrder);
     ShortPickUpOrderForAdminResponse toShortPickUpOrderForAdminResponse(PickUpOrder pickUpOrder);
     StaffUpdatePickUpOrderResponse toStaffUpdatePickUpOrderResponse(PickUpOrder pickUpOrder);
