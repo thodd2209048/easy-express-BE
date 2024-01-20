@@ -1,6 +1,7 @@
 package com.example.easyexpressbackend.domain.shipment.controller;
 
 import com.example.easyexpressbackend.domain.shipment.ShipmentService;
+import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import com.example.easyexpressbackend.domain.shipment.dto.AddShipmentDto;
 import com.example.easyexpressbackend.domain.shipment.response.ShortCustomerShipmentResponse;
 import com.example.easyexpressbackend.domain.shipment.response.withDistrict.AddShipmentResponse;
@@ -26,7 +27,8 @@ public class CustomerShipmentController {
     @GetMapping({"", "/"})
     public Page<ShortCustomerShipmentResponse> listShipments(
             Pageable pageable,
-            @RequestParam(value = "startTime", required = false) ZonedDateTime startTime) {
+            @RequestParam(value = "startTime", required = false) ZonedDateTime startTime
+    ) {
         return service.listShipmentsForCustomer(pageable, startTime);
     }
 

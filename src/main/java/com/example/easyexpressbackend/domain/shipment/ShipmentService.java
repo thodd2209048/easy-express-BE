@@ -52,7 +52,7 @@ public class ShipmentService {
                                                             ShipmentStatus status,
                                                             ZonedDateTime startDateTime) {
         ZonedDateTime endDateTime = startDateTime == null ? null : startDateTime.plusHours(24);
-        return shipmentRepository.findShipmentsFilterByHubIdAndStatusAndDateTime(
+        return shipmentRepository.findShipmentsFilterByHubIdAndStatusAndDateTimeOrderByCreatedAtDesc(
                         pageable, hubId, status, startDateTime, endDateTime);
     }
     public Page<ListShipmentResponse> listShipmentsForAdmin(Pageable pageable,
@@ -66,8 +66,9 @@ public class ShipmentService {
     public Page<ShortCustomerShipmentResponse> listShipmentsForCustomer(Pageable pageable,
                                                                         ZonedDateTime startDateTime) {
         return this.listShipments(pageable, null, null, startDateTime)
-                .map(shipmentMapper::shipmentToShortCustomerShipmentResponse);
+                .map(this::convertToShortCustomerShipmentResponse);
     }
+
 
     public Shipment getShipment(String number) {
         return shipmentRepository.findByNumber(number)
@@ -126,6 +127,16 @@ public class ShipmentService {
         return shipmentResponse;
     }
 
+    private ShortCustomerShipmentResponse convertToShortCustomerShipmentResponse(Shipment shipment) {
+        ShortCustomerShipmentResponse response = shipmentMapper.shipmentToShortCustomerShipmentResponse(shipment);
+//
+//        Tracking lastTracking = trackingService.getTracking(shipment.getLastTrackingId());
+//        ShipmentStatus status = lastTracking.getShipmentStatus();
+//
+//        response.setStatus(status);
+
+        return response;
+    }
     private AdminGetShipmentResponse convertShipmentToAdminGetShipmentResponse(Shipment shipment) {
         AdminGetShipmentResponse shipmentResponse = shipmentMapper.shipmentToAdminGetShipmentResponse(shipment);
 

@@ -89,7 +89,7 @@ public class RegionService {
             return provincesCacheOptional.get().getProvinces();
         }
 
-        List<Province> provinces = provinceRepository.findAll();
+        List<Province> provinces = provinceRepository.findAllByOrderByNameAsc();
         List<NameCodeProvinceResponse> provinceResponses = provinces.stream()
                 .map(mapper::provinceToNameCodeProvinceResponse)
                 .toList();
@@ -107,7 +107,7 @@ public class RegionService {
             return districtsCacheOptional.get().getDistricts();
         }
 
-        List<District> districts = districtRepository.findAll();
+        List<District> districts = districtRepository.findAllByOrderByNameAsc();
         List<DistrictWithNameCodeResponse> districtResponses = districts.stream()
                 .map(this::districtToDistrictWithNameCodeResponse)
                 .toList();

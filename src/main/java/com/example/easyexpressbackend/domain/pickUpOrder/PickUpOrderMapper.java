@@ -25,7 +25,6 @@ public interface PickUpOrderMapper {
     @Mapping(target = "hubId", ignore = true)
     PickUpOrder fromAddPickUpOrderDto(AddPickUpOrderDto addPickUpOrderDto);
 
-    @Mapping(target = "district", ignore = true)
     GetPickUpOrderResponse toGetPickUpOrderResponse(PickUpOrder pickUpOrder);
 
     ShortPickUpOrderForCustomerResponse toShortPickUpOrderForCustomerResponse(PickUpOrder pickUpOrder);

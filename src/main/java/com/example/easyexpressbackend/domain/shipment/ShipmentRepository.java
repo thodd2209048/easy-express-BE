@@ -45,7 +45,7 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
             "OR (t.createdAt >= :startDateTime " +
             "AND t.createdAt < :endDateTime  ))"
     )
-    Page<Shipment> findShipmentsFilterByHubIdAndStatusAndDateTime(
+    Page<Shipment> findShipmentsFilterByHubIdAndStatusAndDateTimeOrderByCreatedAtDesc(
             Pageable pageable,
             Long hubId,
             ShipmentStatus status,
