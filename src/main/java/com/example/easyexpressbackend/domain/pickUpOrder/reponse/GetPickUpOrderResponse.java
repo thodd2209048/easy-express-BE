@@ -18,7 +18,7 @@ public class GetPickUpOrderResponse {
     private String senderName;
     private String senderPhone;
     private String senderAddress;
-    private DistrictWithNameResponse district;
+    private String districtCode;
     //    TIME
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;

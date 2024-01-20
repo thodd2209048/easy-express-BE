@@ -1,5 +1,6 @@
 package com.example.easyexpressbackend.domain.shipment.response;
 
+import com.example.easyexpressbackend.domain.shipment.constant.ShipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
