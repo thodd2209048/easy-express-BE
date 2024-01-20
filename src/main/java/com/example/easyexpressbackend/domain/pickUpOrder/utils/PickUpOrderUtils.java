@@ -14,15 +14,18 @@ public class PickUpOrderUtils {
         if (startTime.getMinute() != 0 && startTime.getMinute() != 30)
             throw new InvalidValueException("The start time must be on the hour or half hour.");
 
-        LocalTime earliestAllowedTime = LocalTime.of(8, 0);
-        LocalTime latestAllowedTime = LocalTime.of(17, 0);
-        LocalTime startTimeLocalTime = startTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalTime();
-        if (startTimeLocalTime.isBefore(earliestAllowedTime) || startTimeLocalTime.isAfter(latestAllowedTime)) {
-            throw new InvalidValueException("The start time must be between 8:00 AM and 5:00 PM (local time).");
+        ZonedDateTime startTimeInVietnamZoneId = startTime.withZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime startTimeLocal = startTimeInVietnamZoneId.toLocalDateTime();
+
+        LocalDateTime earliestAllowedTime = startTimeLocal.withHour(8).withMinute(0).withSecond(0);
+        LocalDateTime latestAllowedTime = startTimeLocal.withHour(17).withMinute(0).withSecond(0);
+        if (startTimeLocal.isBefore(earliestAllowedTime) || startTimeLocal.isAfter(latestAllowedTime)) {
+            throw new InvalidValueException(
+                    "The start time (" + startTimeLocal + ") must be between 8:00 AM and 17:00 PM (local time).");
         }
 
-        LocalDate startTimeDate = startTime.withZoneSameLocal(ZoneId.systemDefault()).toLocalDate();
-        LocalDate nowDate = LocalDateTime.now().toLocalDate();
+        LocalDate startTimeDate = startTime.withZoneSameLocal(ZoneId.of("Asia/Ho_Chi_Minh")).toLocalDate();
+        LocalDate nowDate = ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Asia/Ho_Chi_Minh")).toLocalDate();
         if (startTimeDate.isAfter(nowDate.plusDays(3))) {
             throw new InvalidValueException("The pick up date must be within 3 days.");
         }
@@ -40,15 +43,18 @@ public class PickUpOrderUtils {
         if (endTime.getMinute() != 0 && endTime.getMinute() != 30)
             throw new InvalidValueException("The end time must be on the hour or half hour.");
 
-        LocalTime earliestAllowedTime = LocalTime.of(8, 30);
-        LocalTime latestAllowedTime = LocalTime.of(17, 30);
-        LocalTime endTimeLocalTime = endTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalTime();
-        if (endTimeLocalTime.isBefore(earliestAllowedTime) || endTimeLocalTime.isAfter(latestAllowedTime)) {
-            throw new InvalidValueException("The end time (" + endTimeLocalTime + ") must be between 8:30 AM and 17:30 PM (local time).");
+        ZonedDateTime endTimeInVietnamZoneId = endTime.withZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime endTimeLocal = endTimeInVietnamZoneId.toLocalDateTime();
+
+        LocalDateTime earliestAllowedTime = endTimeLocal.withHour(8).withMinute(30).withSecond(0);
+        LocalDateTime latestAllowedTime = endTimeLocal.withHour(17).withMinute(30).withSecond(0);
+        if (endTimeLocal.isBefore(earliestAllowedTime) || endTimeLocal.isAfter(latestAllowedTime)) {
+            throw new InvalidValueException(
+                    "The end time (" + endTimeLocal + ") must be between 8:30 AM and 17:30 PM (local time).");
         }
 
-        LocalDate startTimeDate = startTime.withZoneSameLocal(ZoneId.systemDefault()).toLocalDate();
-        LocalDate endTimeDate = endTime.withZoneSameLocal(ZoneId.systemDefault()).toLocalDate();
+        LocalDate startTimeDate = startTime.withZoneSameLocal(ZoneId.of("Asia/Ho_Chi_Minh")).toLocalDate();
+        LocalDate endTimeDate = endTime.withZoneSameLocal(ZoneId.of("Asia/Ho_Chi_Minh")).toLocalDate();
         if (!endTimeDate.isEqual(startTimeDate)) {
             throw new InvalidValueException("End time must be on the same day as start time.");
         }
