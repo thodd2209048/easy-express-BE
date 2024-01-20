@@ -29,22 +29,22 @@ public class PickUpOrderUtils {
         return true;
     }
 
-    public static boolean isValidEndPickUpTime(ZonedDateTime startTime, ZonedDateTime endTime){
-        if(startTime == null)
+    public static boolean isValidEndPickUpTime(ZonedDateTime startTime, ZonedDateTime endTime) {
+        if (startTime == null)
             throw new ActionNotAllowedException("The start time must be set before the end time.");
 
         ZonedDateTime afterStartTime30Minutes = startTime.plusMinutes(30);
-        if(endTime.isBefore(afterStartTime30Minutes))
+        if (endTime.isBefore(afterStartTime30Minutes))
             throw new InvalidValueException("The end time must be at least 30 minutes after the start time.");
 
-        if(endTime.getMinute()!=0 && endTime.getMinute() != 30)
+        if (endTime.getMinute() != 0 && endTime.getMinute() != 30)
             throw new InvalidValueException("The end time must be on the hour or half hour.");
 
         LocalTime earliestAllowedTime = LocalTime.of(8, 30);
         LocalTime latestAllowedTime = LocalTime.of(17, 30);
         LocalTime endTimeLocalTime = endTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalTime();
         if (endTimeLocalTime.isBefore(earliestAllowedTime) || endTimeLocalTime.isAfter(latestAllowedTime)) {
-            throw new InvalidValueException("The end time must be between 8:30 AM and 17:30 PM (local time).");
+            throw new InvalidValueException("The end time (" + endTimeLocalTime + ") must be between 8:30 AM and 17:30 PM (local time).");
         }
 
         LocalDate startTimeDate = startTime.withZoneSameLocal(ZoneId.systemDefault()).toLocalDate();
