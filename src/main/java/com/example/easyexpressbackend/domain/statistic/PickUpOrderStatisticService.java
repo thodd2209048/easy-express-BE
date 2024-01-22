@@ -29,13 +29,13 @@ public class PickUpOrderStatisticService {
         ZonedDateTime momentStartOfDate = Utils.getStartOfDate(now);
         ZonedDateTime momentEndOfDate = Utils.getEndOfDate(now);
 
-        Long unfinishedOrdersCount = pickUpOrderRepository.countByStatusAndStartTimeBetween(
+        Long unfinishedOrdersCount = pickUpOrderRepository.countByStatusAndAndStartTimeBetween(
                 PickUpOrderStatus.ASSIGNED_TO_HUB,
                 momentStartOfDate,
                 momentEndOfDate
         );
 
-        Long inProcessOrdersCount = pickUpOrderRepository.countByStatusAndStartTimeBetweenAndStartTimeBeforeAndEndTimeAfter(
+        Long inProcessOrdersCount = pickUpOrderRepository.countByStatusAndStartTimeAfterAndStartTimeBeforeAndStartTimeBeforeAndEndTimeAfter(
                 PickUpOrderStatus.ASSIGNED_TO_HUB,
                 momentStartOfDate,
                 momentEndOfDate,
@@ -43,7 +43,7 @@ public class PickUpOrderStatisticService {
                 now
         );
 
-        Long missedDeadlineOrdersCount = pickUpOrderRepository.countByStatusAndStartTimeBetweenAndEndTimeBefore(
+        Long missedDeadlineOrdersCount = pickUpOrderRepository.countByStatusAndStartTimeAfterAndStartTimeBeforeAndEndTimeBefore(
                 PickUpOrderStatus.ASSIGNED_TO_HUB,
                 momentStartOfDate,
                 momentEndOfDate,

@@ -16,6 +16,6 @@ public class Utils {
 
     public static ZonedDateTime getEndOfDate(ZonedDateTime now){
         ZonedDateTime nowInVietnamZone = now.withZoneSameLocal(ZoneId.of("Asia/Ho_Chi_Minh"));
-        return nowInVietnamZone.withHour(0).withMinute(0).withSecond(0).withNano(0).minusNanos(1);
+        return nowInVietnamZone.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0).minusNanos(1);
     }
 }
