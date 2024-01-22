@@ -29,4 +29,18 @@ public interface PickUpOrderRepository extends JpaRepository<PickUpOrder, Long> 
 
     List<PickUpOrder> findByStatusAndStartTimeBetween(PickUpOrderStatus status, ZonedDateTime timeBeginDate, ZonedDateTime timeEndDate);
     List<PickUpOrder> findByStatusAndEndTimeBefore(PickUpOrderStatus status, ZonedDateTime timeEndDate);
+    Long countByStatusAndStartTimeBetween(PickUpOrderStatus status, ZonedDateTime timeBeginDate, ZonedDateTime timeEndDate);
+
+    Long countByStatusAndStartTimeBetweenAndStartTimeBeforeAndEndTimeAfter(PickUpOrderStatus status,
+                                                                           ZonedDateTime momentOfStartPeriod,
+                                                                           ZonedDateTime momentOfEndPeriod,
+                                                                           ZonedDateTime now1,
+                                                                           ZonedDateTime now2
+                                                                           );
+
+    Long countByStatusAndStartTimeBetweenAndEndTimeBefore(PickUpOrderStatus status,
+                                                                           ZonedDateTime momentOfStartPeriod,
+                                                                           ZonedDateTime momentOfEndPeriod,
+                                                                           ZonedDateTime now1
+    );
 }
