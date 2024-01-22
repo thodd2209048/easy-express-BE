@@ -93,11 +93,10 @@ public class TrackingService {
 
     @Transactional
     public TrackingPrivateResponse addTrackingContinued(AddTrackingDto addTrackingDto) {
-        Long startTime = System.currentTimeMillis();
         Shipment shipment = shipmentService.getShipment(addTrackingDto.getShipmentNumber());
         Hub hub = hubService.getHubById(addTrackingDto.getHubId());
         this.validateAddTrackingDto(addTrackingDto);
-        System.out.println("-----------validate: " + (System.currentTimeMillis() - startTime));
+
 
         Tracking tracking = trackingMapper.addTrackingToTracking(addTrackingDto);
 
@@ -105,17 +104,16 @@ public class TrackingService {
         tracking.setDistrictCode(districtCode);
 
         trackingRepository.save(tracking);
-        System.out.println("Save new tracking: " + (System.currentTimeMillis() - startTime));
 
         shipmentService.updateLastTrackingId(shipment, tracking.getId());
 
-        System.out.println("Update shipment: " + (System.currentTimeMillis() - startTime));
+
         if (tracking.getShipmentStatus() == ShipmentStatus.DELIVERED) {
             emailRequestProducer.convertAndSendDeliveredEmail(toEmail, shipment, tracking);
         } else if(tracking.getShipmentStatus() == ShipmentStatus.PICKED_UP){
             emailRequestProducer.convertAndSendPickedUpEmail(toEmail, shipment, tracking);
         }
-        System.out.println("Send email: " + (System.currentTimeMillis() - startTime));
+
         return trackingMapper.trackingToTrackingPrivateResponse(tracking);
     }
 
